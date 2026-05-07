@@ -563,33 +563,67 @@
 
 <section id="instalacion">
   <div class="section-inner">
-    <div class="reveal"><div class="section-tag">Empieza en 2 minutos</div><h2 class="section-title">¿Cómo instalar ContaAyC?</h2><p class="section-sub">Elige tu sistema operativo y sigue los pasos. Es más fácil de lo que crees.</p></div>
+    <div class="reveal">
+      <div class="section-tag">Empieza en 2 minutos</div>
+      <h2 class="section-title">¿Cómo instalar ContaAyC?</h2>
+      <p class="section-sub">Elige tu sistema operativo y sigue los pasos. Es más fácil de lo que crees.</p>
+    </div>
     <div class="steps-grid reveal">
-      <div class="step-card reveal reveal-delay-1"><div class="step-num">1</div><div class="step-title">Recibe el APK</div><p class="step-desc">Tu docente te envía el archivo <strong>ContaAyC.apk</strong> por WhatsApp o correo electrónico.</p></div>
-      <div class="step-card reveal reveal-delay-2"><div class="step-num">2</div><div class="step-title">Abre el archivo</div><p class="step-desc">Toca el archivo descargado. Si el celular pregunta, permite la instalación desde fuentes externas.</p></div>
-      <div class="step-card reveal reveal-delay-3"><div class="step-num">3</div><div class="step-title">Instala</div><p class="step-desc">Toca <strong>"Instalar"</strong> y espera menos de 30 segundos.</p></div>
-      <div class="step-card reveal reveal-delay-4"><div class="step-num">4</div><div class="step-title">¡Listo!</div><p class="step-desc">Busca el ícono de ContaAyC en tu pantalla de inicio y empieza a calcular.</p></div>
-    </div>
-    <div class="install-note reveal">💡 Si aparece "App bloqueada por Play Protect", toca <strong>"Instalar de todas formas"</strong>. Es normal para apps que no están en Play Store.</div>
-    <div class="install-cta reveal" id="descargar"><p style="font-size:14px;color:var(--sub);margin-bottom:16px">¿Tienes Android? Descarga el APK directamente:</p><a href="#" class="btn-primary" style="display:inline-flex" onclick="alert('Próximamente: enlace de descarga del APK. Por ahora solicítalo a tu docente.')">↓ Descargar ContaAyC v1.0 — Android</a></div>
-  </div>
-</section>
-
-<section id="docentes">
-  <div class="section-inner">
-    <div class="reveal"><div class="section-tag" style="color:rgba(201,168,76,.8)">Para educadores</div><h2 class="section-title">Diseñada para el aula</h2><p class="section-sub">ContaAyC crece con tu clase. Tú decides qué módulos están disponibles y cuándo.</p></div>
-    <div class="docentes-grid">
-      <div class="docentes-features reveal reveal-delay-1">
-        <div class="doc-feature"><div class="doc-feature-icon">📲</div><div><div class="doc-feature-title">Distribución por WhatsApp</div><p class="doc-feature-desc">Comparte el APK directamente. Sin tiendas de apps, sin cuentas de desarrollador.</p></div></div>
-        <div class="doc-feature"><div class="doc-feature-icon">🔧</div><div><div class="doc-feature-title">Módulos según el semestre</div><p class="doc-feature-desc">Activa los módulos a medida que avanza el curso. Los próximos se activarán con una actualización.</p></div></div>
-        <div class="doc-feature"><div class="doc-feature-icon">📐</div><div><div class="doc-feature-title">Fórmulas visibles</div><p class="doc-feature-desc">Los estudiantes ven la fórmula aplicada en cada cálculo — refuerza el aprendizaje teórico.</p></div></div>
-        <div class="doc-feature"><div class="doc-feature-icon">💰</div><div><div class="doc-feature-title">Costo cero</div><p class="doc-feature-desc">La app es gratuita para instalar, distribuir y actualizar. Sin licencias ni suscripciones.</p></div></div>
+      <div class="step-card reveal reveal-delay-1">
+        <div class="step-num">1</div>
+        <div class="step-title">Recibe el APK</div>
+        <p class="step-desc">Tu docente te envía el archivo <strong>ContaAyC.apk</strong> por WhatsApp o correo electrónico.</p>
       </div>
-      <div class="docentes-cta-box reveal reveal-delay-2"><h3>¿Quieres usar ContaAyC en tu clase?</h3><p>Escríbenos para recibir el APK más reciente o para reportar sugerencias y mejoras.</p><a href="mailto:contacto@contaayc.com" class="btn-outline-gold">✉ Contactar al desarrollador</a></div>
+      <div class="step-card reveal reveal-delay-2">
+        <div class="step-num">2</div>
+        <div class="step-title">Abre el archivo</div>
+        <p class="step-desc">Toca el archivo descargado. Si el celular pregunta, permite la instalación desde fuentes externas.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-3">
+        <div class="step-num">3</div>
+        <div class="step-title">Instala</div>
+        <p class="step-desc">Toca <strong>"Instalar"</strong> y espera menos de 30 segundos.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-4">
+        <div class="step-num">4</div>
+        <div class="step-title">¡Listo!</div>
+        <p class="step-desc">Busca el ícono de ContaAyC en tu pantalla de inicio y empieza a calcular.</p>
+      </div>
+    </div>
+
+    <div class="install-note reveal">
+      💡 Si aparece "App bloqueada por Play Protect", toca <strong>"Instalar de todas formas"</strong>. Es normal para apps que no están en Play Store.
+    </div>
+
+    <div class="install-cta reveal" id="descargar">
+      <p style="font-size:14px;color:var(--sub);margin-bottom:16px">
+        📲 Descarga el APK directamente:
+      </p>
+      <a href="https://bit.ly/ContaAyC" 
+         class="btn-primary" 
+         style="display:inline-flex; gap:8px; align-items:center;" 
+         id="downloadBtn"
+         target="_blank"
+         rel="noopener noreferrer">
+        ⬇ Descargar ContaAyC v1.0 — Android (88.4 MB)
+      </a>
+
+      <!-- Código QR debajo del botón -->
+      <div style="margin-top: 40px; text-align: center;">
+        <p style="font-size:13px; color:var(--sub); margin-bottom:12px;">
+          También puedes escanear este código QR desde tu celular:
+        </p>
+        <img src="assets/qr-contaayc.png" 
+             alt="Código QR para descargar ContaAyC" 
+             style="width: 180px; height: auto; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <p style="font-size:12px; color:var(--sub); margin-top:10px;">
+          Abre la cámara o lector de QR y toca el enlace.
+        </p>
+      </div>
     </div>
   </div>
 </section>
-
+  
 <section id="faq">
   <div class="section-inner" style="text-align:center">
     <div class="reveal"><div class="section-tag">Preguntas frecuentes</div><h2 class="section-title">¿Tienes dudas?</h2></div>
