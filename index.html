@@ -7,12 +7,16 @@
   <meta name="theme-color" content="#0A1F3D">
   <title>ContaAyC — Calculadora Financiera Educativa</title>
 
+  <!-- Favicon usando tu logo PNG (subido a assets/logo.png) -->
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="apple-touch-icon" href="assets/logo.png">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <style>
-    /* ── Variables ──────────────────────────────────────────────────────── */
+    /* ========== ESTILOS COMPLETOS (con soporte para logo imagen) ========== */
     :root {
       --azul:    #0A1F3D;
       --azul2:   #0d2650;
@@ -30,7 +34,6 @@
       --shadow:  0 8px 40px rgba(10,31,61,.13);
     }
 
-    /* ── Reset ──────────────────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
@@ -39,10 +42,28 @@
       color: var(--texto);
       overflow-x: hidden;
     }
-    img { max-width: 100%; display: block; }
     a { text-decoration: none; }
 
-    /* ── Navbar ─────────────────────────────────────────────────────────── */
+    /* Clases para el logo imagen */
+    .logo-img {
+      display: block;
+      height: 32px;
+      width: auto;
+    }
+    .logo-img-lg {
+      height: 56px;
+    }
+    .logo-img-footer {
+      height: 48px;
+      margin-bottom: 12px;
+    }
+    .logo-img-mockup {
+      height: 48px;
+      width: auto;
+      margin: 0 auto 8px;
+    }
+
+    /* Navbar */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       background: rgba(10,31,61,.95);
@@ -52,10 +73,17 @@
       border-bottom: 1px solid rgba(201,168,76,.2);
     }
     .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-logo .logo-img { height: 28px; }
+    .nav-logo .logo-text {
       font-family: 'Playfair Display', serif;
-      font-size: 22px; font-weight: 900;
+      font-weight: 900;
+      font-size: 20px;
       color: var(--dorado);
-      letter-spacing: .5px;
+      letter-spacing: 0.5px;
     }
     .nav-links {
       display: flex; gap: 28px; list-style: none;
@@ -82,7 +110,7 @@
       transition: all .3s;
     }
 
-    /* ── Hero ───────────────────────────────────────────────────────────── */
+    /* Hero */
     .hero {
       min-height: 100vh;
       background: var(--azul);
@@ -91,23 +119,15 @@
       position: relative;
       overflow: hidden;
     }
+    .hero::before, .hero::after { content: ''; position: absolute; inset: 0; pointer-events: none; }
     .hero::before {
-      content: '';
-      position: absolute; inset: 0;
-      background:
-        radial-gradient(ellipse 60% 50% at 80% 40%, rgba(201,168,76,.12) 0%, transparent 70%),
-        radial-gradient(ellipse 40% 40% at 20% 70%, rgba(74,144,217,.08) 0%, transparent 70%);
-      pointer-events: none;
+      background: radial-gradient(ellipse 60% 50% at 80% 40%, rgba(201,168,76,.12) 0%, transparent 70%),
+                  radial-gradient(ellipse 40% 40% at 20% 70%, rgba(74,144,217,.08) 0%, transparent 70%);
     }
-    /* Grid diagonal lines subtle */
     .hero::after {
-      content: '';
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(201,168,76,.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(201,168,76,.04) 1px, transparent 1px);
+      background-image: linear-gradient(rgba(201,168,76,.04) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(201,168,76,.04) 1px, transparent 1px);
       background-size: 60px 60px;
-      pointer-events: none;
     }
     .hero-inner {
       max-width: 1140px; margin: 0 auto; width: 100%;
@@ -123,10 +143,23 @@
       padding: 6px 16px;
       font-size: 12px; font-weight: 600;
       color: var(--dorado);
-      letter-spacing: .8px; text-transform: uppercase;
+      letter-spacing: .8px;
       margin-bottom: 20px;
     }
     .hero-badge::before { content: '●'; font-size: 8px; }
+    .hero-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .hero-logo .logo-img { height: 56px; }
+    .hero-logo .logo-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--dorado);
+    }
     .hero h1 {
       font-family: 'Playfair Display', serif;
       font-size: clamp(44px, 6vw, 72px);
@@ -158,11 +191,7 @@
       transition: background .2s, transform .15s, box-shadow .2s;
       box-shadow: 0 4px 20px rgba(201,168,76,.35);
     }
-    .btn-primary:hover {
-      background: var(--dorado2);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba(201,168,76,.45);
-    }
+    .btn-primary:hover { background: var(--dorado2); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(201,168,76,.45); }
     .btn-secondary {
       display: inline-flex; align-items: center; gap: 10px;
       background: transparent;
@@ -175,15 +204,10 @@
       cursor: pointer;
       transition: border-color .2s, color .2s, background .2s;
     }
-    .btn-secondary:hover {
-      border-color: var(--dorado);
-      color: var(--dorado);
-      background: rgba(201,168,76,.06);
-    }
+    .btn-secondary:hover { border-color: var(--dorado); color: var(--dorado); background: rgba(201,168,76,.06); }
     .hero-stats {
       display: flex; gap: 32px; margin-top: 48px;
     }
-    .hero-stat { }
     .hero-stat-num {
       font-family: 'Playfair Display', serif;
       font-size: 32px; font-weight: 700;
@@ -195,27 +219,15 @@
     }
 
     /* Phone mockup */
-    .hero-visual {
-      display: flex; justify-content: center; align-items: center;
-      position: relative;
-    }
-    .phone-wrap {
-      position: relative;
-      animation: float 4s ease-in-out infinite;
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-16px); }
-    }
+    .hero-visual { display: flex; justify-content: center; align-items: center; position: relative; }
+    .phone-wrap { position: relative; animation: float 4s ease-in-out infinite; }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
     .phone-frame {
       width: 260px;
       background: #111827;
       border-radius: 44px;
       padding: 14px;
-      box-shadow:
-        0 0 0 2px #1f2a3a,
-        0 40px 80px rgba(0,0,0,.6),
-        0 0 60px rgba(201,168,76,.08);
+      box-shadow: 0 0 0 2px #1f2a3a, 0 40px 80px rgba(0,0,0,.6), 0 0 60px rgba(201,168,76,.08);
     }
     .phone-screen {
       background: var(--azul);
@@ -228,15 +240,7 @@
       padding: 20px 16px 14px;
       text-align: center;
     }
-    .ps-logo {
-      width: 54px; height: 54px;
-      background: var(--dorado);
-      border-radius: 14px;
-      margin: 0 auto 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Playfair Display', serif;
-      font-size: 18px; font-weight: 900; color: var(--azul);
-    }
+    .ps-logo img { height: 48px; width: auto; margin-bottom: 8px; }
     .ps-title {
       font-family: 'Playfair Display', serif;
       font-size: 14px; font-weight: 700;
@@ -249,286 +253,84 @@
       margin: 10px 16px;
     }
     .ps-body { padding: 10px 12px; background: #F4F6FA; flex: 1; }
-    .ps-label {
-      font-size: 8px; font-weight: 700; color: #8A96A8;
-      letter-spacing: 1px; text-transform: uppercase;
-      margin-bottom: 8px; padding: 0 2px;
-    }
+    .ps-label { font-size: 8px; font-weight: 700; color: #8A96A8; text-transform: uppercase; margin-bottom: 8px; }
     .ps-card {
-      background: white;
-      border-radius: 10px;
-      margin-bottom: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(10,31,61,.08);
+      background: white; border-radius: 10px; margin-bottom: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(10,31,61,.08);
       display: flex;
     }
     .ps-card-accent { width: 4px; }
-    .ps-card-content {
-      flex: 1; padding: 9px 10px;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .ps-icon {
-      width: 32px; height: 32px; border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; flex-shrink: 0;
-    }
+    .ps-card-content { flex: 1; padding: 9px 10px; display: flex; align-items: center; gap: 8px; }
+    .ps-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; background: rgba(201,168,76,.15); flex-shrink: 0; }
     .ps-card-text { flex: 1; }
     .ps-card-title { font-size: 9px; font-weight: 700; color: #0A1F3D; }
     .ps-card-sub { font-size: 7px; color: #6B7888; margin-top: 1px; }
-    .ps-soon {
-      background: #FFF3CD; border-radius: 4px;
-      padding: 2px 5px; font-size: 6px; font-weight: 700; color: #856404;
-      display: inline-block; margin-top: 2px;
-    }
+    .ps-soon { background: #FFF3CD; border-radius: 4px; padding: 2px 5px; font-size: 6px; font-weight: 700; color: #856404; display: inline-block; margin-top: 2px; }
     .ps-arrow { font-size: 16px; color: var(--dorado); font-weight: 300; }
-    /* glow ring around phone */
-    .phone-glow {
-      position: absolute; inset: -30px;
-      background: radial-gradient(ellipse at center, rgba(201,168,76,.12) 0%, transparent 70%);
-      pointer-events: none; z-index: -1;
-    }
+    .phone-glow { position: absolute; inset: -30px; background: radial-gradient(ellipse at center, rgba(201,168,76,.12) 0%, transparent 70%); pointer-events: none; z-index: -1; }
 
-    /* ── Section base ───────────────────────────────────────────────────── */
+    /* Secciones generales */
     section { padding: 90px 32px; }
     .section-inner { max-width: 1140px; margin: 0 auto; }
-    .section-tag {
-      display: inline-block;
-      font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--dorado);
-      margin-bottom: 12px;
-    }
-    .section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(30px, 4vw, 46px);
-      font-weight: 700; color: var(--azul);
-      line-height: 1.15; margin-bottom: 16px;
-    }
-    .section-sub {
-      font-size: 17px; color: var(--sub);
-      line-height: 1.7; max-width: 560px;
-      font-weight: 300;
-    }
+    .section-tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--dorado); margin-bottom: 12px; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: clamp(30px, 4vw, 46px); font-weight: 700; color: var(--azul); line-height: 1.15; margin-bottom: 16px; }
+    .section-sub { font-size: 17px; color: var(--sub); line-height: 1.7; max-width: 560px; font-weight: 300; }
 
-    /* ── Beneficios ─────────────────────────────────────────────────────── */
+    /* Beneficios */
     #beneficios { background: var(--gris); }
-    .beneficios-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 24px; margin-top: 52px;
-    }
-    .ben-card {
-      background: var(--blanco);
-      border-radius: var(--r2);
-      padding: 32px 28px;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(10,31,61,.06);
-      transition: transform .25s, box-shadow .25s;
-      position: relative; overflow: hidden;
-    }
-    .ben-card::before {
-      content: '';
-      position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, var(--dorado), var(--dorado2));
-      transform: scaleX(0); transform-origin: left;
-      transition: transform .3s;
-    }
+    .beneficios-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-top: 52px; }
+    .ben-card { background: var(--blanco); border-radius: var(--r2); padding: 32px 28px; box-shadow: var(--shadow); border: 1px solid rgba(10,31,61,.06); transition: transform .25s, box-shadow .25s; position: relative; overflow: hidden; }
+    .ben-card::before { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--dorado), var(--dorado2)); transform: scaleX(0); transform-origin: left; transition: transform .3s; }
     .ben-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(10,31,61,.14); }
     .ben-card:hover::before { transform: scaleX(1); }
-    .ben-icon {
-      font-size: 36px; margin-bottom: 18px;
-      display: block;
-    }
-    .ben-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 19px; font-weight: 700;
-      color: var(--azul); margin-bottom: 10px;
-    }
+    .ben-icon { font-size: 36px; margin-bottom: 18px; display: block; }
+    .ben-title { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; color: var(--azul); margin-bottom: 10px; }
     .ben-desc { font-size: 14px; color: var(--sub); line-height: 1.7; font-weight: 300; }
 
-    /* ── Módulos ────────────────────────────────────────────────────────── */
+    /* Módulos */
     #modulos { background: var(--azul); position: relative; overflow: hidden; }
-    #modulos::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse 50% 60% at 90% 50%, rgba(201,168,76,.08) 0%, transparent 70%);
-      pointer-events: none;
-    }
     #modulos .section-title { color: var(--blanco); }
     #modulos .section-sub { color: rgba(255,255,255,.6); }
-    .modulos-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px; margin-top: 52px;
-    }
-    .modulo-card {
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: var(--r2);
-      padding: 28px 24px;
-      display: flex; gap: 18px; align-items: flex-start;
-      transition: background .25s, border-color .25s, transform .25s;
-      position: relative;
-    }
-    .modulo-card.disponible:hover {
-      background: rgba(255,255,255,.09);
-      border-color: rgba(201,168,76,.4);
-      transform: translateY(-3px);
-    }
+    .modulos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 52px; }
+    .modulo-card { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: var(--r2); padding: 28px 24px; display: flex; gap: 18px; align-items: flex-start; transition: background .25s, border-color .25s, transform .25s; }
+    .modulo-card.disponible:hover { background: rgba(255,255,255,.09); border-color: rgba(201,168,76,.4); transform: translateY(-3px); }
     .modulo-card.pronto { opacity: .6; }
-    .modulo-icon-wrap {
-      width: 52px; height: 52px; border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 24px; flex-shrink: 0;
-    }
+    .modulo-icon-wrap { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
     .modulo-body { flex: 1; }
-    .modulo-titulo {
-      font-family: 'Playfair Display', serif;
-      font-size: 17px; font-weight: 700; color: var(--blanco);
-      margin-bottom: 6px;
-    }
+    .modulo-titulo { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: var(--blanco); margin-bottom: 6px; }
     .modulo-desc { font-size: 13px; color: rgba(255,255,255,.55); line-height: 1.6; font-weight: 300; }
-    .modulo-badge {
-      display: inline-block; margin-top: 10px;
-      font-size: 11px; font-weight: 700; padding: 3px 10px;
-      border-radius: 50px; letter-spacing: .3px;
-    }
+    .modulo-badge { display: inline-block; margin-top: 10px; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 50px; letter-spacing: .3px; }
     .badge-ok { background: rgba(93,184,122,.2); color: var(--verde); }
     .badge-soon { background: rgba(230,126,34,.2); color: var(--naranja); }
-    .sub-list {
-      list-style: none; margin-top: 12px; display: flex; flex-direction: column; gap: 4px;
-    }
-    .sub-list li {
-      font-size: 12px; color: rgba(255,255,255,.5);
-      padding-left: 14px; position: relative;
-    }
-    .sub-list li::before {
-      content: '›'; position: absolute; left: 0;
-      color: var(--dorado); font-weight: 700;
-    }
+    .sub-list { list-style: none; margin-top: 12px; display: flex; flex-direction: column; gap: 4px; }
+    .sub-list li { font-size: 12px; color: rgba(255,255,255,.5); padding-left: 14px; position: relative; }
+    .sub-list li::before { content: '›'; position: absolute; left: 0; color: var(--dorado); font-weight: 700; }
 
-    /* ── Instalación ────────────────────────────────────────────────────── */
-    #instalacion { background: var(--blanco); }
-
-    .steps-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 24px;
-    }
-    .step-card {
-      border: 1px solid #e8ecf2;
-      border-radius: var(--r2);
-      padding: 28px 22px;
-      position: relative;
-      transition: border-color .25s, box-shadow .25s;
-    }
-    .step-card:hover {
-      border-color: var(--dorado);
-      box-shadow: 0 8px 30px rgba(201,168,76,.1);
-    }
-    .step-num {
-      width: 40px; height: 40px; border-radius: 12px;
-      background: var(--azul);
-      color: var(--dorado);
-      font-family: 'Playfair Display', serif;
-      font-size: 18px; font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 16px;
-    }
-    .step-title {
-      font-size: 15px; font-weight: 700; color: var(--azul);
-      margin-bottom: 6px;
-    }
-    .step-desc { font-size: 13px; color: var(--sub); line-height: 1.65; font-weight: 300; }
-    .install-note {
-      margin-top: 28px;
-      background: rgba(201,168,76,.08);
-      border-left: 4px solid var(--dorado);
-      border-radius: 0 12px 12px 0;
-      padding: 14px 20px;
-      font-size: 13px; color: #7a5e1a; font-weight: 500;
-    }
-    .install-cta {
-      margin-top: 40px; text-align: center;
-    }
-
-    /* ── Capturas ───────────────────────────────────────────────────────── */
+    /* Capturas */
     #capturas { background: var(--gris); }
-    .capturas-scroll {
-      display: flex; gap: 20px;
-      overflow-x: auto;
-      padding: 20px 4px 32px;
-      scrollbar-width: thin;
-      scrollbar-color: var(--dorado) transparent;
-      margin-top: 40px;
-    }
-    .captura-card {
-      flex-shrink: 0; width: 200px;
-      background: var(--azul);
-      border-radius: 28px;
-      padding: 10px;
-      box-shadow: 0 16px 48px rgba(10,31,61,.2);
-      transition: transform .3s;
-    }
+    .capturas-scroll { display: flex; gap: 20px; overflow-x: auto; padding: 20px 4px 32px; scrollbar-width: thin; scrollbar-color: var(--dorado) transparent; margin-top: 40px; }
+    .captura-card { flex-shrink: 0; width: 200px; background: var(--azul); border-radius: 28px; padding: 10px; box-shadow: 0 16px 48px rgba(10,31,61,.2); transition: transform .3s; }
     .captura-card:hover { transform: scale(1.04) translateY(-4px); }
-    .captura-screen {
-      background: #F4F6FA;
-      border-radius: 20px;
-      aspect-ratio: 9/19;
-      overflow: hidden;
-      display: flex; flex-direction: column;
-    }
-    .cs-header {
-      background: var(--azul);
-      padding: 14px 12px 10px;
-    }
+    .captura-screen { background: #F4F6FA; border-radius: 20px; aspect-ratio: 9/19; overflow: hidden; display: flex; flex-direction: column; }
+    .cs-header { background: var(--azul); padding: 14px 12px 10px; }
     .cs-back { font-size: 9px; color: var(--dorado); margin-bottom: 2px; }
     .cs-title { font-size: 11px; font-weight: 700; color: white; text-align: center; }
     .cs-body { padding: 10px 8px; flex: 1; }
-    .cs-chip {
-      display: inline-block; font-size: 7px; font-weight: 700;
-      padding: 3px 8px; border-radius: 50px; margin-bottom: 8px;
-    }
-    .cs-formula {
-      background: var(--azul); border-radius: 6px;
-      padding: 7px; text-align: center;
-      font-size: 8px; color: var(--dorado); font-weight: 600;
-      font-style: italic; margin-bottom: 8px;
-    }
-    .cs-input {
-      background: white; border-radius: 6px;
-      border: 1px solid #E2E8F0;
-      padding: 6px 8px; margin-bottom: 5px;
-    }
+    .cs-chip { display: inline-block; font-size: 7px; font-weight: 700; padding: 3px 8px; border-radius: 50px; margin-bottom: 8px; }
+    .cs-formula { background: var(--azul); border-radius: 6px; padding: 7px; text-align: center; font-size: 8px; color: var(--dorado); font-weight: 600; font-style: italic; margin-bottom: 8px; }
+    .cs-input { background: white; border-radius: 6px; border: 1px solid #E2E8F0; padding: 6px 8px; margin-bottom: 5px; }
     .cs-input-label { font-size: 6px; color: #8A96A8; font-weight: 600; }
     .cs-input-val { font-size: 9px; color: #0A1F3D; font-weight: 500; }
-    .cs-result {
-      background: var(--azul); border-radius: 6px;
-      padding: 8px; margin-top: 6px;
-      display: flex; justify-content: space-between; align-items: center;
-    }
+    .cs-result { background: var(--azul); border-radius: 6px; padding: 8px; margin-top: 6px; display: flex; justify-content: space-between; align-items: center; }
     .cs-result-label { font-size: 7px; color: var(--dorado); }
     .cs-result-val { font-size: 10px; color: white; font-weight: 700; }
-    .captura-label {
-      text-align: center;
-      font-size: 12px; font-weight: 600; color: rgba(255,255,255,.7);
-      margin-top: 10px;
-    }
-
-    /* Módulos mini */
+    .captura-label { text-align: center; font-size: 12px; font-weight: 600; color: rgba(255,255,255,.7); margin-top: 10px; }
     .cs-modules { padding: 8px; }
-    .cs-mod {
-      background: white; border-radius: 8px;
-      margin-bottom: 5px; overflow: hidden;
-      display: flex;
-    }
+    .cs-mod { background: white; border-radius: 8px; margin-bottom: 5px; overflow: hidden; display: flex; }
     .cs-mod-accent { width: 3px; }
     .cs-mod-content { flex:1; padding: 7px 8px; display: flex; align-items: center; gap: 6px; }
     .cs-mod-icon { font-size: 12px; }
     .cs-mod-title { font-size: 8px; font-weight: 700; color: #0A1F3D; }
     .cs-mod-sub { font-size: 6px; color: #6B7888; }
-
-    /* Tabla mini */
     .cs-table { font-size: 7px; margin-top: 4px; }
     .cs-thead { background: var(--azul); display: flex; border-radius: 4px 4px 0 0; }
     .cs-th { flex:1; color: var(--dorado); font-weight: 700; padding: 4px 3px; text-align: right; }
@@ -538,107 +340,48 @@
     .cs-td { flex:1; padding: 4px 3px; text-align: right; color: #0A1F3D; }
     .cs-td:first-child { text-align: center; color: var(--dorado); font-weight: 700; }
 
-    /* ── Para docentes ──────────────────────────────────────────────────── */
+    /* Instalación */
+    #instalacion { background: var(--blanco); }
+    .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+    .step-card { border: 1px solid #e8ecf2; border-radius: var(--r2); padding: 28px 22px; position: relative; transition: border-color .25s, box-shadow .25s; }
+    .step-card:hover { border-color: var(--dorado); box-shadow: 0 8px 30px rgba(201,168,76,.1); }
+    .step-num { width: 40px; height: 40px; border-radius: 12px; background: var(--azul); color: var(--dorado); font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+    .step-title { font-size: 15px; font-weight: 700; color: var(--azul); margin-bottom: 6px; }
+    .step-desc { font-size: 13px; color: var(--sub); line-height: 1.65; font-weight: 300; }
+    .install-note { margin-top: 28px; background: rgba(201,168,76,.08); border-left: 4px solid var(--dorado); border-radius: 0 12px 12px 0; padding: 14px 20px; font-size: 13px; color: #7a5e1a; font-weight: 500; }
+    .install-cta { margin-top: 40px; text-align: center; }
+
+    /* Docentes */
     #docentes { background: var(--azul); position: relative; overflow: hidden; }
-    #docentes::after {
-      content: '';
-      position: absolute; top: -100px; right: -100px;
-      width: 400px; height: 400px;
-      background: radial-gradient(circle, rgba(201,168,76,.1) 0%, transparent 70%);
-      pointer-events: none;
-    }
     #docentes .section-title { color: var(--blanco); }
     #docentes .section-sub { color: rgba(255,255,255,.6); }
-    .docentes-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 48px; align-items: center;
-      margin-top: 52px;
-    }
+    .docentes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; margin-top: 52px; }
     .docentes-features { display: flex; flex-direction: column; gap: 20px; }
-    .doc-feature {
-      display: flex; gap: 16px; align-items: flex-start;
-    }
-    .doc-feature-icon {
-      width: 44px; height: 44px; border-radius: 12px;
-      background: rgba(201,168,76,.15);
-      border: 1px solid rgba(201,168,76,.25);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px; flex-shrink: 0;
-    }
-    .doc-feature-title {
-      font-size: 15px; font-weight: 700; color: var(--blanco); margin-bottom: 4px;
-    }
+    .doc-feature { display: flex; gap: 16px; align-items: flex-start; }
+    .doc-feature-icon { width: 44px; height: 44px; border-radius: 12px; background: rgba(201,168,76,.15); border: 1px solid rgba(201,168,76,.25); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .doc-feature-title { font-size: 15px; font-weight: 700; color: var(--blanco); margin-bottom: 4px; }
     .doc-feature-desc { font-size: 13px; color: rgba(255,255,255,.55); line-height: 1.6; font-weight: 300; }
-    .docentes-cta-box {
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(201,168,76,.25);
-      border-radius: var(--r2);
-      padding: 40px 36px;
-      text-align: center;
-    }
-    .docentes-cta-box h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 24px; font-weight: 700;
-      color: var(--blanco); margin-bottom: 12px;
-    }
-    .docentes-cta-box p {
-      font-size: 14px; color: rgba(255,255,255,.55);
-      line-height: 1.7; font-weight: 300; margin-bottom: 28px;
-    }
-    .btn-outline-gold {
-      display: inline-flex; align-items: center; gap: 8px;
-      border: 2px solid var(--dorado);
-      color: var(--dorado);
-      background: transparent;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px; font-weight: 700;
-      padding: 13px 28px; border-radius: 50px;
-      cursor: pointer;
-      transition: background .2s, color .2s;
-    }
-    .btn-outline-gold:hover {
-      background: var(--dorado); color: var(--azul);
-    }
+    .docentes-cta-box { background: rgba(255,255,255,.05); border: 1px solid rgba(201,168,76,.25); border-radius: var(--r2); padding: 40px 36px; text-align: center; }
+    .docentes-cta-box h3 { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--blanco); margin-bottom: 12px; }
+    .docentes-cta-box p { font-size: 14px; color: rgba(255,255,255,.55); line-height: 1.7; font-weight: 300; margin-bottom: 28px; }
+    .btn-outline-gold { display: inline-flex; align-items: center; gap: 8px; border: 2px solid var(--dorado); color: var(--dorado); background: transparent; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; padding: 13px 28px; border-radius: 50px; cursor: pointer; transition: background .2s, color .2s; }
+    .btn-outline-gold:hover { background: var(--dorado); color: var(--azul); }
 
-    /* ── FAQ ────────────────────────────────────────────────────────────── */
+    /* FAQ */
     #faq { background: var(--blanco); }
-    .faq-list {
-      max-width: 720px; margin: 52px auto 0;
-      display: flex; flex-direction: column; gap: 12px;
-    }
-    .faq-item {
-      border: 1px solid #e8ecf2;
-      border-radius: var(--r);
-      overflow: hidden;
-      transition: border-color .2s;
-    }
+    .faq-list { max-width: 720px; margin: 52px auto 0; display: flex; flex-direction: column; gap: 12px; }
+    .faq-item { border: 1px solid #e8ecf2; border-radius: var(--r); overflow: hidden; transition: border-color .2s; }
     .faq-item:hover { border-color: rgba(201,168,76,.4); }
-    .faq-q {
-      width: 100%; background: none; border: none;
-      padding: 20px 24px; cursor: pointer;
-      display: flex; justify-content: space-between; align-items: center;
-      text-align: left;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px; font-weight: 600; color: var(--azul);
-      transition: background .2s;
-    }
+    .faq-q { width: 100%; background: none; border: none; padding: 20px 24px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; text-align: left; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; color: var(--azul); transition: background .2s; }
     .faq-q:hover { background: var(--gris); }
     .faq-q.open { background: var(--gris); }
-    .faq-arrow {
-      font-size: 18px; color: var(--dorado);
-      transition: transform .3s; flex-shrink: 0; margin-left: 12px;
-    }
+    .faq-arrow { font-size: 18px; color: var(--dorado); transition: transform .3s; flex-shrink: 0; margin-left: 12px; }
     .faq-q.open .faq-arrow { transform: rotate(45deg); }
-    .faq-a {
-      max-height: 0; overflow: hidden;
-      transition: max-height .35s ease, padding .2s;
-      padding: 0 24px;
-    }
+    .faq-a { max-height: 0; overflow: hidden; transition: max-height .35s ease, padding .2s; padding: 0 24px; }
     .faq-a.open { max-height: 200px; padding: 0 24px 18px; }
     .faq-a p { font-size: 14px; color: var(--sub); line-height: 1.7; font-weight: 300; }
 
-    /* ── Footer ─────────────────────────────────────────────────────────── */
+    /* Footer */
     footer {
       background: var(--azul);
       padding: 56px 32px 32px;
@@ -649,6 +392,11 @@
       display: grid; grid-template-columns: 2fr 1fr 1fr;
       gap: 48px; margin-bottom: 48px;
     }
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+    }
+    .footer-logo-img { height: 48px; width: auto; margin-bottom: 16px; }
     .footer-brand-name {
       font-family: 'Playfair Display', serif;
       font-size: 28px; font-weight: 900;
@@ -664,10 +412,7 @@
       margin-bottom: 16px;
     }
     .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-    .footer-links a {
-      font-size: 13px; color: rgba(255,255,255,.55);
-      transition: color .2s;
-    }
+    .footer-links a { font-size: 13px; color: rgba(255,255,255,.55); transition: color .2s; }
     .footer-links a:hover { color: var(--dorado); }
     .footer-bottom {
       border-top: 1px solid rgba(255,255,255,.08);
@@ -676,35 +421,20 @@
       flex-wrap: wrap; gap: 12px;
     }
     .footer-copy { font-size: 12px; color: rgba(255,255,255,.3); }
-    .footer-version {
-      font-size: 11px; color: var(--dorado);
-      background: rgba(201,168,76,.1);
-      padding: 4px 12px; border-radius: 50px;
-      font-weight: 600;
-    }
+    .footer-version { font-size: 11px; color: var(--dorado); background: rgba(201,168,76,.1); padding: 4px 12px; border-radius: 50px; font-weight: 600; }
 
-    /* ── Scroll reveal ──────────────────────────────────────────────────── */
-    .reveal {
-      opacity: 0; transform: translateY(32px);
-      transition: opacity .7s ease, transform .7s ease;
-    }
+    /* Scroll reveal y responsive */
+    .reveal { opacity: 0; transform: translateY(32px); transition: opacity .7s ease, transform .7s ease; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
     .reveal-delay-1 { transition-delay: .1s; }
     .reveal-delay-2 { transition-delay: .2s; }
     .reveal-delay-3 { transition-delay: .3s; }
     .reveal-delay-4 { transition-delay: .4s; }
 
-    /* ── Responsive ─────────────────────────────────────────────────────── */
     @media (max-width: 768px) {
       nav { padding: 12px 20px; }
-      .nav-links { display: none; flex-direction: column; gap: 0; }
-      .nav-links.open {
-        display: flex; position: absolute;
-        top: 100%; left: 0; right: 0;
-        background: var(--azul);
-        border-top: 1px solid rgba(201,168,76,.2);
-        padding: 8px 0;
-      }
+      .nav-links { display: none; flex-direction: column; }
+      .nav-links.open { display: flex; position: absolute; top: 100%; left: 0; right: 0; background: var(--azul); border-top: 1px solid rgba(201,168,76,.2); padding: 8px 0; }
       .nav-links li a { display: block; padding: 12px 24px; }
       .nav-toggle { display: block; }
       .hero-inner { grid-template-columns: 1fr; gap: 40px; text-align: center; }
@@ -717,7 +447,6 @@
       section { padding: 64px 20px; }
       .nav-links .nav-cta { margin: 4px 24px; }
     }
-
     @media (max-width: 480px) {
       .hero h1 { font-size: 38px; }
       .steps-grid { grid-template-columns: 1fr; }
@@ -726,9 +455,11 @@
 </head>
 <body>
 
-<!-- ── NAVBAR ──────────────────────────────────────────────────────────────── -->
 <nav>
-  <div class="nav-logo">ContaAyC</div>
+  <div class="nav-logo">
+    <img src="assets/logo.png" alt="ContaAyC Logo" class="logo-img">
+    <div class="logo-text">ContaAyC</div>
+  </div>
   <ul class="nav-links" id="navLinks">
     <li><a href="#beneficios">Beneficios</a></li>
     <li><a href="#modulos">Módulos</a></li>
@@ -742,85 +473,47 @@
   </button>
 </nav>
 
-<!-- ── HERO ────────────────────────────────────────────────────────────────── -->
 <section class="hero" id="inicio">
   <div class="hero-inner">
     <div class="hero-text">
-      <div class="hero-badge">App Educativa Gratuita — Android</div>
+      <div class="hero-badge">APP EDUCATIVA GRATUITA — ANDROID</div>
+      <div class="hero-logo">
+        <img src="assets/logo.png" alt="ContaAyC Logo" class="logo-img">
+        <div class="logo-text">ContaAyC</div>
+      </div>
       <h1>La calculadora financiera<br><span>que cabe en tu bolsillo</span></h1>
       <p class="hero-sub">
         Resuelve ejercicios de matemática financiera directamente desde tu celular.
         Fórmulas visibles, resultados instantáneos y tablas de amortización incluidas.
       </p>
       <div class="hero-btns">
-        <a href="#descargar" class="btn-primary" id="btnHeroDescargar">
-          ↓ Descargar para Android
-        </a>
-        <a href="#modulos" class="btn-secondary">
-          Ver módulos →
-        </a>
+        <a href="#descargar" class="btn-primary" id="btnHeroDescargar">⬇ Descargar para Android</a>
+        <a href="#modulos" class="btn-secondary">Ver módulos →</a>
       </div>
       <div class="hero-stats">
-        <div class="hero-stat">
-          <div class="hero-stat-num">5</div>
-          <div class="hero-stat-label">Calculadoras</div>
-        </div>
-        <div class="hero-stat">
-          <div class="hero-stat-num">100%</div>
-          <div class="hero-stat-label">Sin internet</div>
-        </div>
-        <div class="hero-stat">
-          <div class="hero-stat-num">0</div>
-          <div class="hero-stat-label">Costo</div>
-        </div>
+        <div class="hero-stat"><div class="hero-stat-num">5</div><div class="hero-stat-label">Calculadoras</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">100%</div><div class="hero-stat-label">Sin internet</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">0</div><div class="hero-stat-label">Costo</div></div>
       </div>
     </div>
-
-    <!-- Phone mockup -->
     <div class="hero-visual">
       <div class="phone-wrap">
         <div class="phone-glow"></div>
         <div class="phone-frame">
           <div class="phone-screen">
             <div class="ps-header">
-              <div class="ps-logo">AyC</div>
+              <div class="ps-logo">
+                <img src="assets/logo.png" alt="AyC logo">
+              </div>
               <div class="ps-title">ContaAyC</div>
               <div class="ps-tagline">Herramienta educativa financiera</div>
             </div>
             <div class="ps-divider"></div>
             <div class="ps-body">
-              <div class="ps-label">Módulos</div>
-              <div class="ps-card">
-                <div class="ps-card-accent" style="background:#C9A84C"></div>
-                <div class="ps-card-content">
-                  <div class="ps-icon" style="background:rgba(201,168,76,.15)">📊</div>
-                  <div class="ps-card-text">
-                    <div class="ps-card-title">Matemática Financiera</div>
-                    <div class="ps-card-sub">Interés, tasas, anualidades</div>
-                  </div>
-                  <div class="ps-arrow">›</div>
-                </div>
-              </div>
-              <div class="ps-card">
-                <div class="ps-card-accent" style="background:#4A90D9"></div>
-                <div class="ps-card-content">
-                  <div class="ps-icon" style="background:rgba(74,144,217,.15)">🧾</div>
-                  <div class="ps-card-text">
-                    <div class="ps-card-title">Compra y Ventas</div>
-                    <div class="ps-soon">🕐 Próximamente</div>
-                  </div>
-                </div>
-              </div>
-              <div class="ps-card">
-                <div class="ps-card-accent" style="background:#5DB87A"></div>
-                <div class="ps-card-content">
-                  <div class="ps-icon" style="background:rgba(93,184,122,.15)">👥</div>
-                  <div class="ps-card-text">
-                    <div class="ps-card-title">Nómina y Prestaciones</div>
-                    <div class="ps-soon">🕐 Próximamente</div>
-                  </div>
-                </div>
-              </div>
+              <div class="ps-label">MÓDULOS</div>
+              <div class="ps-card"><div class="ps-card-accent" style="background:#C9A84C"></div><div class="ps-card-content"><div class="ps-icon">📊</div><div class="ps-card-text"><div class="ps-card-title">Matemática Financiera</div><div class="ps-card-sub">Interés, tasas, anualidades</div></div><div class="ps-arrow">›</div></div></div>
+              <div class="ps-card"><div class="ps-card-accent" style="background:#4A90D9"></div><div class="ps-card-content"><div class="ps-icon">🧾</div><div class="ps-card-text"><div class="ps-card-title">Compra y Ventas</div><div class="ps-soon">🕐 Próximamente</div></div></div></div>
+              <div class="ps-card"><div class="ps-card-accent" style="background:#5DB87A"></div><div class="ps-card-content"><div class="ps-icon">👥</div><div class="ps-card-text"><div class="ps-card-title">Nómina y Prestaciones</div><div class="ps-soon">🕐 Próximamente</div></div></div></div>
             </div>
           </div>
         </div>
@@ -829,492 +522,111 @@
   </div>
 </section>
 
-<!-- ── BENEFICIOS ───────────────────────────────────────────────────────────── -->
 <section id="beneficios">
   <div class="section-inner">
-    <div class="reveal">
-      <div class="section-tag">¿Por qué ContaAyC?</div>
-      <h2 class="section-title">Todo lo que necesitas<br>para tus clases de finanzas</h2>
-      <p class="section-sub">Sin publicidad, sin suscripciones. Una app pensada para el aula.</p>
-    </div>
+    <div class="reveal"><div class="section-tag">¿Por qué ContaAyC?</div><h2 class="section-title">Todo lo que necesitas<br>para tus clases de finanzas</h2><p class="section-sub">Sin publicidad, sin suscripciones. Una app pensada para el aula.</p></div>
     <div class="beneficios-grid">
-      <div class="ben-card reveal reveal-delay-1">
-        <span class="ben-icon">📱</span>
-        <div class="ben-title">Sin internet, siempre disponible</div>
-        <p class="ben-desc">Instala una vez y úsala en cualquier lugar. No requiere conexión a internet para ningún cálculo.</p>
-      </div>
-      <div class="ben-card reveal reveal-delay-2">
-        <span class="ben-icon">🎓</span>
-        <div class="ben-title">Aprende mientras calculas</div>
-        <p class="ben-desc">Cada pantalla muestra la fórmula aplicada. No solo obtienes el resultado — entiendes por qué.</p>
-      </div>
-      <div class="ben-card reveal reveal-delay-3">
-        <span class="ben-icon">⚡</span>
-        <div class="ben-title">Resultados en tiempo real</div>
-        <p class="ben-desc">Los cálculos se actualizan automáticamente mientras escribes. Sin botones de calcular.</p>
-      </div>
-      <div class="ben-card reveal reveal-delay-4">
-        <span class="ben-icon">📄</span>
-        <div class="ben-title">Comparte tus tablas</div>
-        <p class="ben-desc">Genera tablas de amortización en PDF profesional o comparte por WhatsApp con un toque.</p>
-      </div>
-      <div class="ben-card reveal reveal-delay-1">
-        <span class="ben-icon">🔢</span>
-        <div class="ben-title">Formato colombiano</div>
-        <p class="ben-desc">Números con puntos de miles y comas decimales. Exactamente como los aprendes en clase.</p>
-      </div>
-      <div class="ben-card reveal reveal-delay-2">
-        <span class="ben-icon">🆓</span>
-        <div class="ben-title">Completamente gratuito</div>
-        <p class="ben-desc">Sin costo, sin anuncios, sin versiones premium. Tu docente la comparte y ya está lista para usar.</p>
-      </div>
+      <div class="ben-card reveal reveal-delay-1"><span class="ben-icon">📱</span><div class="ben-title">Sin internet, siempre disponible</div><p class="ben-desc">Instala una vez y úsala en cualquier lugar. No requiere conexión a internet para ningún cálculo.</p></div>
+      <div class="ben-card reveal reveal-delay-2"><span class="ben-icon">🎓</span><div class="ben-title">Aprende mientras calculas</div><p class="ben-desc">Cada pantalla muestra la fórmula aplicada. No solo obtienes el resultado — entiendes por qué.</p></div>
+      <div class="ben-card reveal reveal-delay-3"><span class="ben-icon">⚡</span><div class="ben-title">Resultados en tiempo real</div><p class="ben-desc">Los cálculos se actualizan automáticamente mientras escribes. Sin botones de calcular.</p></div>
+      <div class="ben-card reveal reveal-delay-4"><span class="ben-icon">📄</span><div class="ben-title">Comparte tus tablas</div><p class="ben-desc">Genera tablas de amortización en PDF profesional o comparte por WhatsApp con un toque.</p></div>
+      <div class="ben-card reveal reveal-delay-1"><span class="ben-icon">🔢</span><div class="ben-title">Formato colombiano</div><p class="ben-desc">Números con puntos de miles y comas decimales. Exactamente como los aprendes en clase.</p></div>
+      <div class="ben-card reveal reveal-delay-2"><span class="ben-icon">🆓</span><div class="ben-title">Completamente gratuito</div><p class="ben-desc">Sin costo, sin anuncios, sin versiones premium. Tu docente la comparte y ya está lista para usar.</p></div>
     </div>
   </div>
 </section>
 
-<!-- ── MÓDULOS ──────────────────────────────────────────────────────────────── -->
 <section id="modulos">
   <div class="section-inner">
-    <div class="reveal">
-      <div class="section-tag" style="color:rgba(201,168,76,.8)">Calculadoras incluidas</div>
-      <h2 class="section-title">Módulos de la app</h2>
-      <p class="section-sub">Cada módulo es una calculadora especializada con fórmulas, validaciones y resultados detallados.</p>
-    </div>
+    <div class="reveal"><div class="section-tag" style="color:rgba(201,168,76,.8)">Calculadoras incluidas</div><h2 class="section-title">Módulos de la app</h2><p class="section-sub">Cada módulo es una calculadora especializada con fórmulas, validaciones y resultados detallados.</p></div>
     <div class="modulos-grid">
-
-      <!-- Módulo 1 — disponible -->
-      <div class="modulo-card disponible reveal reveal-delay-1" style="grid-column: span 1;">
-        <div class="modulo-icon-wrap" style="background:rgba(201,168,76,.15)">📊</div>
-        <div class="modulo-body">
-          <div class="modulo-titulo">Matemática Financiera</div>
-          <div class="modulo-desc">Cinco calculadoras especializadas para resolver cualquier ejercicio de finanzas.</div>
-          <span class="modulo-badge badge-ok">Disponible</span>
-          <ul class="sub-list">
-            <li>Interés Simple — calcula VA, VF, i% o n</li>
-            <li>Interés Compuesto — con capitalización</li>
-            <li>Tasas de Interés — tabla de equivalencias</li>
-            <li>Anualidades — préstamos y metas de ahorro</li>
-            <li>VPN y TIR — evaluación de proyectos</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Módulo tabla amort -->
-      <div class="modulo-card disponible reveal reveal-delay-2">
-        <div class="modulo-icon-wrap" style="background:rgba(74,144,217,.15)">📋</div>
-        <div class="modulo-body">
-          <div class="modulo-titulo">Tabla de Amortización</div>
-          <div class="modulo-desc">Incluida dentro del módulo de Anualidades.</div>
-          <span class="modulo-badge badge-ok">Disponible</span>
-          <ul class="sub-list">
-            <li>Sistema Francés, Alemán y Americano</li>
-            <li>Períodos de gracia (muerta o capital)</li>
-            <li>Abonos — reducir plazo o cuota</li>
-            <li>Exportar PDF profesional</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Próximos módulos -->
-      <div class="modulo-card pronto reveal reveal-delay-3">
-        <div class="modulo-icon-wrap" style="background:rgba(230,126,34,.15)">🧾</div>
-        <div class="modulo-body">
-          <div class="modulo-titulo">Registro de Compra y Ventas</div>
-          <div class="modulo-desc">Registro de facturas, IVA y movimientos contables.</div>
-          <span class="modulo-badge badge-soon">Próximamente</span>
-        </div>
-      </div>
-
-      <div class="modulo-card pronto reveal reveal-delay-4">
-        <div class="modulo-icon-wrap" style="background:rgba(93,184,122,.15)">👥</div>
-        <div class="modulo-body">
-          <div class="modulo-titulo">Nómina y Prestaciones</div>
-          <div class="modulo-desc">Liquidación de salarios y prestaciones sociales según ley colombiana.</div>
-          <span class="modulo-badge badge-soon">Próximamente</span>
-        </div>
-      </div>
-
+      <div class="modulo-card disponible reveal reveal-delay-1"><div class="modulo-icon-wrap" style="background:rgba(201,168,76,.15)">📊</div><div class="modulo-body"><div class="modulo-titulo">Matemática Financiera</div><div class="modulo-desc">Cinco calculadoras especializadas para resolver cualquier ejercicio de finanzas.</div><span class="modulo-badge badge-ok">Disponible</span><ul class="sub-list"><li>Interés Simple — calcula VA, VF, i% o n</li><li>Interés Compuesto — con capitalización</li><li>Tasas de Interés — tabla de equivalencias</li><li>Anualidades — préstamos y metas de ahorro</li><li>VPN y TIR — evaluación de proyectos</li></ul></div></div>
+      <div class="modulo-card disponible reveal reveal-delay-2"><div class="modulo-icon-wrap" style="background:rgba(74,144,217,.15)">📋</div><div class="modulo-body"><div class="modulo-titulo">Tabla de Amortización</div><div class="modulo-desc">Incluida dentro del módulo de Anualidades.</div><span class="modulo-badge badge-ok">Disponible</span><ul class="sub-list"><li>Sistema Francés, Alemán y Americano</li><li>Períodos de gracia (muerta o capital)</li><li>Abonos — reducir plazo o cuota</li><li>Exportar PDF profesional</li></ul></div></div>
+      <div class="modulo-card pronto reveal reveal-delay-3"><div class="modulo-icon-wrap" style="background:rgba(230,126,34,.15)">🧾</div><div class="modulo-body"><div class="modulo-titulo">Registro de Compra y Ventas</div><div class="modulo-desc">Registro de facturas, IVA y movimientos contables.</div><span class="modulo-badge badge-soon">Próximamente</span></div></div>
+      <div class="modulo-card pronto reveal reveal-delay-4"><div class="modulo-icon-wrap" style="background:rgba(93,184,122,.15)">👥</div><div class="modulo-body"><div class="modulo-titulo">Nómina y Prestaciones</div><div class="modulo-desc">Liquidación de salarios y prestaciones sociales según ley colombiana.</div><span class="modulo-badge badge-soon">Próximamente</span></div></div>
     </div>
   </div>
 </section>
 
-<!-- ── CAPTURAS ─────────────────────────────────────────────────────────────── -->
 <section id="capturas">
   <div class="section-inner">
-    <div class="reveal">
-      <div class="section-tag">Así se ve la app</div>
-      <h2 class="section-title">Diseñada para el celular</h2>
-      <p class="section-sub">Interfaz clara, colores que orientan y resultados que se leen de un vistazo.</p>
-    </div>
+    <div class="reveal"><div class="section-tag">Así se ve la app</div><h2 class="section-title">Diseñada para el celular</h2><p class="section-sub">Interfaz clara, colores que orientan y resultados que se leen de un vistazo.</p></div>
     <div class="capturas-scroll">
-
-      <!-- Pantalla inicio -->
-      <div class="captura-card">
-        <div class="captura-screen">
-          <div class="cs-header">
-            <div class="ps-logo" style="width:40px;height:40px;font-size:14px;margin-bottom:6px">AyC</div>
-            <div class="cs-title">ContaAyC</div>
-          </div>
-          <div class="cs-modules">
-            <div class="ps-label" style="font-size:7px">MÓDULOS</div>
-            <div class="cs-mod">
-              <div class="cs-mod-accent" style="background:#C9A84C"></div>
-              <div class="cs-mod-content">
-                <div class="cs-mod-icon">📊</div>
-                <div><div class="cs-mod-title">Matemática Financiera</div><div class="cs-mod-sub">5 calculadoras</div></div>
-              </div>
-            </div>
-            <div class="cs-mod" style="opacity:.6">
-              <div class="cs-mod-accent" style="background:#4A90D9"></div>
-              <div class="cs-mod-content">
-                <div class="cs-mod-icon">🧾</div>
-                <div><div class="cs-mod-title">Compra y Ventas</div><div class="ps-soon">Próximamente</div></div>
-              </div>
-            </div>
-            <div class="cs-mod" style="opacity:.6">
-              <div class="cs-mod-accent" style="background:#5DB87A"></div>
-              <div class="cs-mod-content">
-                <div class="cs-mod-icon">👥</div>
-                <div><div class="cs-mod-title">Nómina</div><div class="ps-soon">Próximamente</div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="captura-label">Inicio</div>
-      </div>
-
-      <!-- Interés Simple -->
-      <div class="captura-card">
-        <div class="captura-screen">
-          <div class="cs-header"><div class="cs-title">Interés Simple</div></div>
-          <div style="padding:8px">
-            <div style="display:flex;gap:4px;margin-bottom:6px">
-              <div style="flex:1;background:#0A1F3D;border-radius:6px;padding:4px;text-align:center;font-size:7px;color:#C9A84C;font-weight:700">Valor Actual</div>
-              <div style="flex:1;background:#F4F6FA;border-radius:6px;padding:4px;text-align:center;font-size:7px;color:#6B7888">Valor Futuro</div>
-            </div>
-            <div class="cs-formula">VA = VF / (1 + i% × n)</div>
-            <div class="cs-input"><div class="cs-input-label">VALOR FUTURO (VF)</div><div class="cs-input-val">1.200.000</div></div>
-            <div class="cs-input"><div class="cs-input-label">TASA (i%)</div><div class="cs-input-val">2 %</div></div>
-            <div class="cs-input"><div class="cs-input-label">TIEMPO (n)</div><div class="cs-input-val">12 meses</div></div>
-            <div class="cs-result">
-              <span class="cs-result-label">Valor Actual (VA)</span>
-              <span class="cs-result-val">$ 1.000.000</span>
-            </div>
-          </div>
-        </div>
-        <div class="captura-label">Interés Simple</div>
-      </div>
-
-      <!-- Tasas -->
-      <div class="captura-card">
-        <div class="captura-screen">
-          <div class="cs-header"><div class="cs-title">Tasas de Interés</div></div>
-          <div style="padding:8px">
-            <div style="font-size:7px;font-weight:700;color:#8A96A8;margin-bottom:5px">DENOMINACIÓN</div>
-            <div style="display:flex;gap:3px;margin-bottom:8px">
-              <div style="flex:1;background:#0A1F3D;border-radius:5px;padding:4px;text-align:center;font-size:7px;color:#C9A84C;font-weight:700">Efectiva</div>
-              <div style="flex:1;background:#F4F6FA;border-radius:5px;padding:4px;text-align:center;font-size:7px;color:#6B7888">Periódica</div>
-              <div style="flex:1;background:#F4F6FA;border-radius:5px;padding:4px;text-align:center;font-size:7px;color:#6B7888">Nominal</div>
-            </div>
-            <div class="cs-input" style="margin-bottom:6px"><div class="cs-input-label">TASA</div><div class="cs-input-val">24 %</div></div>
-            <div style="background:#0A1F3D;border-radius:6px;padding:6px;text-align:center;margin-bottom:6px">
-              <div style="font-size:7px;color:#C9A84C">Tasa Efectiva Anual</div>
-              <div style="font-size:12px;color:white;font-weight:700">24,0000 %</div>
-            </div>
-            <div class="cs-table">
-              <div class="cs-thead">
-                <div class="cs-th" style="text-align:left">Frec.</div>
-                <div class="cs-th">ip (%)</div>
-              </div>
-              <div class="cs-tr"><div class="cs-td" style="text-align:left">Semestral</div><div class="cs-td">11,3553</div></div>
-              <div class="cs-tr"><div class="cs-td" style="text-align:left">Mensual</div><div class="cs-td">1,8101</div></div>
-              <div class="cs-tr"><div class="cs-td" style="text-align:left">Diaria</div><div class="cs-td">0,0598</div></div>
-            </div>
-          </div>
-        </div>
-        <div class="captura-label">Tasas</div>
-      </div>
-
-      <!-- Anualidades -->
-      <div class="captura-card">
-        <div class="captura-screen">
-          <div class="cs-header"><div class="cs-title">Anualidades</div></div>
-          <div style="padding:8px">
-            <div style="background:white;border-radius:8px;padding:8px;margin-bottom:6px;border:1px solid #E2E8F0">
-              <div style="display:flex;justify-content:space-between;align-items:center">
-                <div>
-                  <div style="font-size:8px;font-weight:700;color:#0A1F3D">🏦 Préstamo (Valor Actual)</div>
-                  <div style="font-size:7px;color:#6B7888">Calculando desde valor presente</div>
-                </div>
-                <div style="width:28px;height:14px;background:#4A90D9;border-radius:7px;position:relative">
-                  <div style="width:10px;height:10px;background:white;border-radius:50%;position:absolute;right:2px;top:2px"></div>
-                </div>
-              </div>
-            </div>
-            <div class="cs-input"><div class="cs-input-label">VALOR ACTUAL (VA)</div><div class="cs-input-val">50.000.000</div></div>
-            <div class="cs-input"><div class="cs-input-label">TASA (i%)</div><div class="cs-input-val">1,5 %</div></div>
-            <div class="cs-input"><div class="cs-input-label">TIEMPO (n)</div><div class="cs-input-val">60 períodos</div></div>
-            <div class="cs-result">
-              <span class="cs-result-label">Cuota a pagar</span>
-              <span class="cs-result-val">$ 1.265.795</span>
-            </div>
-          </div>
-        </div>
-        <div class="captura-label">Anualidades</div>
-      </div>
-
-      <!-- Tabla amort -->
-      <div class="captura-card">
-        <div class="captura-screen">
-          <div class="cs-header"><div class="cs-title">Tabla Francés</div></div>
-          <div style="padding:8px">
-            <div style="background:white;border-radius:6px;padding:6px;margin-bottom:6px">
-              <div style="font-size:7px;color:#6B7888">Préstamo: <b style="color:#0A1F3D">$ 50.000.000</b></div>
-              <div style="font-size:7px;color:#6B7888">Cuota: <b style="color:#0A1F3D">$ 1.265.795</b></div>
-            </div>
-            <div class="cs-table">
-              <div class="cs-thead">
-                <div class="cs-th" style="flex:.5">#</div>
-                <div class="cs-th">Cuota</div>
-                <div class="cs-th">Interés</div>
-                <div class="cs-th">Saldo</div>
-              </div>
-              <div class="cs-tr">
-                <div class="cs-td" style="flex:.5">1</div>
-                <div class="cs-td">1.265.795</div>
-                <div class="cs-td">750.000</div>
-                <div class="cs-td">49.484.205</div>
-              </div>
-              <div class="cs-tr">
-                <div class="cs-td" style="flex:.5">2</div>
-                <div class="cs-td">1.265.795</div>
-                <div class="cs-td">742.263</div>
-                <div class="cs-td">48.960.673</div>
-              </div>
-              <div class="cs-tr">
-                <div class="cs-td" style="flex:.5">3</div>
-                <div class="cs-td">1.265.795</div>
-                <div class="cs-td">734.410</div>
-                <div class="cs-td">48.429.288</div>
-              </div>
-              <div class="cs-tr">
-                <div class="cs-td" style="flex:.5">4</div>
-                <div class="cs-td">1.265.795</div>
-                <div class="cs-td">726.439</div>
-                <div class="cs-td">47.889.932</div>
-              </div>
-            </div>
-            <div style="background:#0A1F3D;border-radius:6px;padding:5px 8px;margin-top:6px;display:flex;justify-content:space-between">
-              <span style="font-size:7px;color:#C9A84C">Total intereses</span>
-              <span style="font-size:8px;color:white;font-weight:700">$25.947.700</span>
-            </div>
-          </div>
-        </div>
-        <div class="captura-label">Amortización</div>
-      </div>
-
+      <div class="captura-card"><div class="captura-screen"><div class="cs-header"><div style="text-align:center; margin-bottom:8px;"><img src="assets/logo.png" alt="AyC" style="height:30px;"></div><div class="cs-title">ContaAyC</div></div><div class="cs-modules"><div class="ps-label" style="font-size:7px">MÓDULOS</div><div class="cs-mod"><div class="cs-mod-accent" style="background:#C9A84C"></div><div class="cs-mod-content"><div class="cs-mod-icon">📊</div><div><div class="cs-mod-title">Matemática Financiera</div><div class="cs-mod-sub">5 calculadoras</div></div></div></div><div class="cs-mod" style="opacity:.6"><div class="cs-mod-accent" style="background:#4A90D9"></div><div class="cs-mod-content"><div class="cs-mod-icon">🧾</div><div><div class="cs-mod-title">Compra y Ventas</div><div class="ps-soon">Próximamente</div></div></div></div><div class="cs-mod" style="opacity:.6"><div class="cs-mod-accent" style="background:#5DB87A"></div><div class="cs-mod-content"><div class="cs-mod-icon">👥</div><div><div class="cs-mod-title">Nómina</div><div class="ps-soon">Próximamente</div></div></div></div></div></div><div class="captura-label">Inicio</div></div>
+      <div class="captura-card"><div class="captura-screen"><div class="cs-header"><div class="cs-title">Interés Simple</div></div><div style="padding:8px"><div style="display:flex;gap:4px;margin-bottom:6px"><div style="flex:1;background:#0A1F3D;border-radius:6px;padding:4px;text-align:center;font-size:7px;color:#C9A84C;font-weight:700">Valor Actual</div><div style="flex:1;background:#F4F6FA;border-radius:6px;padding:4px;text-align:center;font-size:7px;color:#6B7888">Valor Futuro</div></div><div class="cs-formula">VA = VF / (1 + i% × n)</div><div class="cs-input"><div class="cs-input-label">VALOR FUTURO (VF)</div><div class="cs-input-val">1.200.000</div></div><div class="cs-input"><div class="cs-input-label">TASA (i%)</div><div class="cs-input-val">2 %</div></div><div class="cs-input"><div class="cs-input-label">TIEMPO (n)</div><div class="cs-input-val">12 meses</div></div><div class="cs-result"><span class="cs-result-label">Valor Actual (VA)</span><span class="cs-result-val">$ 1.000.000</span></div></div></div><div class="captura-label">Interés Simple</div></div>
+      <div class="captura-card"><div class="captura-screen"><div class="cs-header"><div class="cs-title">Tasas de Interés</div></div><div style="padding:8px"><div style="font-size:7px;font-weight:700;color:#8A96A8;margin-bottom:5px">DENOMINACIÓN</div><div style="display:flex;gap:3px;margin-bottom:8px"><div style="flex:1;background:#0A1F3D;border-radius:5px;padding:4px;text-align:center;font-size:7px;color:#C9A84C;font-weight:700">Efectiva</div><div style="flex:1;background:#F4F6FA;border-radius:5px;padding:4px;text-align:center;font-size:7px;color:#6B7888">Periódica</div><div style="flex:1;background:#F4F6FA;border-radius:5px;padding:4px;text-align:center;font-size:7px;color:#6B7888">Nominal</div></div><div class="cs-input" style="margin-bottom:6px"><div class="cs-input-label">TASA</div><div class="cs-input-val">24 %</div></div><div style="background:#0A1F3D;border-radius:6px;padding:6px;text-align:center;margin-bottom:6px"><div style="font-size:7px;color:#C9A84C">Tasa Efectiva Anual</div><div style="font-size:12px;color:white;font-weight:700">24,0000 %</div></div><div class="cs-table"><div class="cs-thead"><div class="cs-th" style="text-align:left">Frec.</div><div class="cs-th">ip (%)</div></div><div class="cs-tr"><div class="cs-td" style="text-align:left">Semestral</div><div class="cs-td">11,3553</div></div><div class="cs-tr"><div class="cs-td" style="text-align:left">Mensual</div><div class="cs-td">1,8101</div></div><div class="cs-tr"><div class="cs-td" style="text-align:left">Diaria</div><div class="cs-td">0,0598</div></div></div></div></div><div class="captura-label">Tasas</div></div>
+      <div class="captura-card"><div class="captura-screen"><div class="cs-header"><div class="cs-title">Anualidades</div></div><div style="padding:8px"><div style="background:white;border-radius:8px;padding:8px;margin-bottom:6px;border:1px solid #E2E8F0"><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:8px;font-weight:700;color:#0A1F3D">🏦 Préstamo (Valor Actual)</div><div style="font-size:7px;color:#6B7888">Calculando desde valor presente</div></div><div style="width:28px;height:14px;background:#4A90D9;border-radius:7px;position:relative"><div style="width:10px;height:10px;background:white;border-radius:50%;position:absolute;right:2px;top:2px"></div></div></div></div><div class="cs-input"><div class="cs-input-label">VALOR ACTUAL (VA)</div><div class="cs-input-val">50.000.000</div></div><div class="cs-input"><div class="cs-input-label">TASA (i%)</div><div class="cs-input-val">1,5 %</div></div><div class="cs-input"><div class="cs-input-label">TIEMPO (n)</div><div class="cs-input-val">60 períodos</div></div><div class="cs-result"><span class="cs-result-label">Cuota a pagar</span><span class="cs-result-val">$ 1.265.795</span></div></div></div><div class="captura-label">Anualidades</div></div>
+      <div class="captura-card"><div class="captura-screen"><div class="cs-header"><div class="cs-title">Tabla Francés</div></div><div style="padding:8px"><div style="background:white;border-radius:6px;padding:6px;margin-bottom:6px"><div style="font-size:7px;color:#6B7888">Préstamo: <b style="color:#0A1F3D">$ 50.000.000</b></div><div style="font-size:7px;color:#6B7888">Cuota: <b style="color:#0A1F3D">$ 1.265.795</b></div></div><div class="cs-table"><div class="cs-thead"><div class="cs-th" style="flex:.5">#</div><div class="cs-th">Cuota</div><div class="cs-th">Interés</div><div class="cs-th">Saldo</div></div><div class="cs-tr"><div class="cs-td" style="flex:.5">1</div><div class="cs-td">1.265.795</div><div class="cs-td">750.000</div><div class="cs-td">49.484.205</div></div><div class="cs-tr"><div class="cs-td" style="flex:.5">2</div><div class="cs-td">1.265.795</div><div class="cs-td">742.263</div><div class="cs-td">48.960.673</div></div><div class="cs-tr"><div class="cs-td" style="flex:.5">3</div><div class="cs-td">1.265.795</div><div class="cs-td">734.410</div><div class="cs-td">48.429.288</div></div><div class="cs-tr"><div class="cs-td" style="flex:.5">4</div><div class="cs-td">1.265.795</div><div class="cs-td">726.439</div><div class="cs-td">47.889.932</div></div></div><div style="background:#0A1F3D;border-radius:6px;padding:5px 8px;margin-top:6px;display:flex;justify-content:space-between"><span style="font-size:7px;color:#C9A84C">Total intereses</span><span style="font-size:8px;color:white;font-weight:700">$25.947.700</span></div></div></div><div class="captura-label">Amortización</div></div>
     </div>
   </div>
 </section>
 
-<!-- ── INSTALACIÓN ──────────────────────────────────────────────────────────── -->
 <section id="instalacion">
   <div class="section-inner">
-    <div class="reveal">
-      <div class="section-tag">Empieza en 2 minutos</div>
-      <h2 class="section-title">¿Cómo instalar ContaAyC?</h2>
-      <p class="section-sub">Elige tu sistema operativo y sigue los pasos. Es más fácil de lo que crees.</p>
-    </div>
+    <div class="reveal"><div class="section-tag">Empieza en 2 minutos</div><h2 class="section-title">¿Cómo instalar ContaAyC?</h2><p class="section-sub">Elige tu sistema operativo y sigue los pasos. Es más fácil de lo que crees.</p></div>
     <div class="steps-grid reveal">
-      <div class="step-card reveal reveal-delay-1">
-        <div class="step-num">1</div>
-        <div class="step-title">Recibe el APK</div>
-        <p class="step-desc">Tu docente te envía el archivo <strong>ContaAyC.apk</strong> por WhatsApp o correo electrónico.</p>
-      </div>
-      <div class="step-card reveal reveal-delay-2">
-        <div class="step-num">2</div>
-        <div class="step-title">Abre el archivo</div>
-        <p class="step-desc">Toca el archivo descargado. Si el celular pregunta, permite la instalación desde fuentes externas.</p>
-      </div>
-      <div class="step-card reveal reveal-delay-3">
-        <div class="step-num">3</div>
-        <div class="step-title">Instala</div>
-        <p class="step-desc">Toca <strong>"Instalar"</strong> y espera menos de 30 segundos.</p>
-      </div>
-      <div class="step-card reveal reveal-delay-4">
-        <div class="step-num">4</div>
-        <div class="step-title">¡Listo!</div>
-        <p class="step-desc">Busca el ícono de ContaAyC en tu pantalla de inicio y empieza a calcular.</p>
-      </div>
+      <div class="step-card reveal reveal-delay-1"><div class="step-num">1</div><div class="step-title">Recibe el APK</div><p class="step-desc">Tu docente te envía el archivo <strong>ContaAyC.apk</strong> por WhatsApp o correo electrónico.</p></div>
+      <div class="step-card reveal reveal-delay-2"><div class="step-num">2</div><div class="step-title">Abre el archivo</div><p class="step-desc">Toca el archivo descargado. Si el celular pregunta, permite la instalación desde fuentes externas.</p></div>
+      <div class="step-card reveal reveal-delay-3"><div class="step-num">3</div><div class="step-title">Instala</div><p class="step-desc">Toca <strong>"Instalar"</strong> y espera menos de 30 segundos.</p></div>
+      <div class="step-card reveal reveal-delay-4"><div class="step-num">4</div><div class="step-title">¡Listo!</div><p class="step-desc">Busca el ícono de ContaAyC en tu pantalla de inicio y empieza a calcular.</p></div>
     </div>
-    <div class="install-note reveal">
-      💡 Si aparece "App bloqueada por Play Protect", toca <strong>"Instalar de todas formas"</strong>. Es normal para apps que no están en Play Store.
-    </div>
-
-    <div class="install-cta reveal" id="descargar">
-      <p style="font-size:14px;color:var(--sub);margin-bottom:16px">¿Tienes Android? Descarga el APK directamente:</p>
-      <a href="#" class="btn-primary" style="display:inline-flex" onclick="alert('Próximamente: enlace de descarga del APK. Por ahora solicítalo a tu docente.')">
-        ↓ Descargar ContaAyC v1.0 — Android
-      </a>
-    </div>
+    <div class="install-note reveal">💡 Si aparece "App bloqueada por Play Protect", toca <strong>"Instalar de todas formas"</strong>. Es normal para apps que no están en Play Store.</div>
+    <div class="install-cta reveal" id="descargar"><p style="font-size:14px;color:var(--sub);margin-bottom:16px">¿Tienes Android? Descarga el APK directamente:</p><a href="#" class="btn-primary" style="display:inline-flex" onclick="alert('Próximamente: enlace de descarga del APK. Por ahora solicítalo a tu docente.')">↓ Descargar ContaAyC v1.0 — Android</a></div>
   </div>
 </section>
 
-<!-- ── PARA DOCENTES ─────────────────────────────────────────────────────────── -->
 <section id="docentes">
   <div class="section-inner">
-    <div class="reveal">
-      <div class="section-tag" style="color:rgba(201,168,76,.8)">Para educadores</div>
-      <h2 class="section-title">Diseñada para el aula</h2>
-      <p class="section-sub">ContaAyC crece con tu clase. Tú decides qué módulos están disponibles y cuándo.</p>
-    </div>
+    <div class="reveal"><div class="section-tag" style="color:rgba(201,168,76,.8)">Para educadores</div><h2 class="section-title">Diseñada para el aula</h2><p class="section-sub">ContaAyC crece con tu clase. Tú decides qué módulos están disponibles y cuándo.</p></div>
     <div class="docentes-grid">
       <div class="docentes-features reveal reveal-delay-1">
-        <div class="doc-feature">
-          <div class="doc-feature-icon">📲</div>
-          <div>
-            <div class="doc-feature-title">Distribución por WhatsApp</div>
-            <p class="doc-feature-desc">Comparte el APK directamente. Sin tiendas de apps, sin cuentas de desarrollador.</p>
-          </div>
-        </div>
-        <div class="doc-feature">
-          <div class="doc-feature-icon">🔧</div>
-          <div>
-            <div class="doc-feature-title">Módulos según el semestre</div>
-            <p class="doc-feature-desc">Activa los módulos a medida que avanza el curso. Los próximos se activarán con una actualización.</p>
-          </div>
-        </div>
-        <div class="doc-feature">
-          <div class="doc-feature-icon">📐</div>
-          <div>
-            <div class="doc-feature-title">Fórmulas visibles</div>
-            <p class="doc-feature-desc">Los estudiantes ven la fórmula aplicada en cada cálculo — refuerza el aprendizaje teórico.</p>
-          </div>
-        </div>
-        <div class="doc-feature">
-          <div class="doc-feature-icon">💰</div>
-          <div>
-            <div class="doc-feature-title">Costo cero</div>
-            <p class="doc-feature-desc">La app es gratuita para instalar, distribuir y actualizar. Sin licencias ni suscripciones.</p>
-          </div>
-        </div>
+        <div class="doc-feature"><div class="doc-feature-icon">📲</div><div><div class="doc-feature-title">Distribución por WhatsApp</div><p class="doc-feature-desc">Comparte el APK directamente. Sin tiendas de apps, sin cuentas de desarrollador.</p></div></div>
+        <div class="doc-feature"><div class="doc-feature-icon">🔧</div><div><div class="doc-feature-title">Módulos según el semestre</div><p class="doc-feature-desc">Activa los módulos a medida que avanza el curso. Los próximos se activarán con una actualización.</p></div></div>
+        <div class="doc-feature"><div class="doc-feature-icon">📐</div><div><div class="doc-feature-title">Fórmulas visibles</div><p class="doc-feature-desc">Los estudiantes ven la fórmula aplicada en cada cálculo — refuerza el aprendizaje teórico.</p></div></div>
+        <div class="doc-feature"><div class="doc-feature-icon">💰</div><div><div class="doc-feature-title">Costo cero</div><p class="doc-feature-desc">La app es gratuita para instalar, distribuir y actualizar. Sin licencias ni suscripciones.</p></div></div>
       </div>
-      <div class="docentes-cta-box reveal reveal-delay-2">
-        <h3>¿Quieres usar ContaAyC en tu clase?</h3>
-        <p>Escríbenos para recibir el APK más reciente o para reportar sugerencias y mejoras.</p>
-        <a href="mailto:contacto@contaayc.com" class="btn-outline-gold">
-          ✉ Contactar al desarrollador
-        </a>
-      </div>
+      <div class="docentes-cta-box reveal reveal-delay-2"><h3>¿Quieres usar ContaAyC en tu clase?</h3><p>Escríbenos para recibir el APK más reciente o para reportar sugerencias y mejoras.</p><a href="mailto:contacto@contaayc.com" class="btn-outline-gold">✉ Contactar al desarrollador</a></div>
     </div>
   </div>
 </section>
 
-<!-- ── FAQ ──────────────────────────────────────────────────────────────────── -->
 <section id="faq">
   <div class="section-inner" style="text-align:center">
-    <div class="reveal">
-      <div class="section-tag">Preguntas frecuentes</div>
-      <h2 class="section-title">¿Tienes dudas?</h2>
-    </div>
+    <div class="reveal"><div class="section-tag">Preguntas frecuentes</div><h2 class="section-title">¿Tienes dudas?</h2></div>
     <div class="faq-list">
-      <div class="faq-item reveal">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          ¿La app funciona sin internet?
-          <span class="faq-arrow">+</span>
-        </button>
-        <div class="faq-a">
-          <p>Sí. Una vez instalado el APK, ContaAyC funciona completamente sin conexión. Todos los cálculos se realizan en el celular.</p>
-        </div>
-      </div>
-      <div class="faq-item reveal">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          ¿Cómo recibo las actualizaciones?
-          <span class="faq-arrow">+</span>
-        </button>
-        <div class="faq-a">
-          <p>Cuando el docente publique una versión nueva, te enviará el APK actualizado por WhatsApp. Solo instálalo encima del anterior y conservas todo.</p>
-        </div>
-      </div>
-      <div class="faq-item reveal">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          ¿La app guarda mis datos?
-          <span class="faq-arrow">+</span>
-        </button>
-        <div class="faq-a">
-          <p>No. ContaAyC no guarda ningún dato por seguridad y privacidad. Al cerrar una pantalla los valores se borran. Cada ejercicio es independiente.</p>
-        </div>
-      </div>
-
-      <div class="faq-item reveal">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          ¿Cuándo estarán disponibles los otros módulos?
-          <span class="faq-arrow">+</span>
-        </button>
-        <div class="faq-a">
-          <p>Los módulos de Nómina y Prestaciones y Registro de Compra y Ventas están en desarrollo. Se activarán con actualizaciones futuras de la app.</p>
-        </div>
-      </div>
-      <div class="faq-item reveal">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          ¿Puedo compartir los resultados?
-          <span class="faq-arrow">+</span>
-        </button>
-        <div class="faq-a">
-          <p>Sí. En la tabla de amortización puedes compartir como texto por WhatsApp o generar un PDF profesional para imprimir o enviar por correo.</p>
-        </div>
-      </div>
+      <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">¿La app funciona sin internet?<span class="faq-arrow">+</span></button><div class="faq-a"><p>Sí. Una vez instalado el APK, ContaAyC funciona completamente sin conexión. Todos los cálculos se realizan en el celular.</p></div></div>
+      <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">¿Cómo recibo las actualizaciones?<span class="faq-arrow">+</span></button><div class="faq-a"><p>Cuando el docente publique una versión nueva, te enviará el APK actualizado por WhatsApp. Solo instálalo encima del anterior y conservas todo.</p></div></div>
+      <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">¿La app guarda mis datos?<span class="faq-arrow">+</span></button><div class="faq-a"><p>No. ContaAyC no guarda ningún dato por seguridad y privacidad. Al cerrar una pantalla los valores se borran. Cada ejercicio es independiente.</p></div></div>
+      <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">¿Cuándo estarán disponibles los otros módulos?<span class="faq-arrow">+</span></button><div class="faq-a"><p>Los módulos de Nómina y Prestaciones y Registro de Compra y Ventas están en desarrollo. Se activarán con actualizaciones futuras de la app.</p></div></div>
+      <div class="faq-item reveal"><button class="faq-q" onclick="toggleFaq(this)">¿Puedo compartir los resultados?<span class="faq-arrow">+</span></button><div class="faq-a"><p>Sí. En la tabla de amortización puedes compartir como texto por WhatsApp o generar un PDF profesional para imprimir o enviar por correo.</p></div></div>
     </div>
   </div>
 </section>
 
-<!-- ── FOOTER ───────────────────────────────────────────────────────────────── -->
 <footer>
   <div class="footer-inner">
-    <div>
+    <div class="footer-brand">
+      <img src="assets/logo.png" alt="ContaAyC Logo" class="footer-logo-img">
       <div class="footer-brand-name">ContaAyC</div>
       <p class="footer-brand-desc">Herramienta educativa gratuita de matemática financiera para celular. Diseñada para estudiantes y docentes colombianos.</p>
     </div>
-    <div>
-      <div class="footer-col-title">Módulos</div>
-      <ul class="footer-links">
-        <li><a href="#modulos">Interés Simple</a></li>
-        <li><a href="#modulos">Interés Compuesto</a></li>
-        <li><a href="#modulos">Tasas de Interés</a></li>
-        <li><a href="#modulos">Anualidades</a></li>
-        <li><a href="#modulos">VPN y TIR</a></li>
-      </ul>
-    </div>
-    <div>
-      <div class="footer-col-title">Accesos</div>
-      <ul class="footer-links">
-        <li><a href="#instalacion">Instalar la app</a></li>
-        <li><a href="#docentes">Para docentes</a></li>
-        <li><a href="#faq">Preguntas frecuentes</a></li>
-        <li><a href="mailto:contacto@contaayc.com">Contacto</a></li>
-      </ul>
-    </div>
+    <div><div class="footer-col-title">Módulos</div><ul class="footer-links"><li><a href="#modulos">Interés Simple</a></li><li><a href="#modulos">Interés Compuesto</a></li><li><a href="#modulos">Tasas de Interés</a></li><li><a href="#modulos">Anualidades</a></li><li><a href="#modulos">VPN y TIR</a></li></ul></div>
+    <div><div class="footer-col-title">Accesos</div><ul class="footer-links"><li><a href="#instalacion">Instalar la app</a></li><li><a href="#docentes">Para docentes</a></li><li><a href="#faq">Preguntas frecuentes</a></li><li><a href="mailto:contacto@contaayc.com">Contacto</a></li></ul></div>
   </div>
-  <div class="footer-bottom">
-    <p class="footer-copy">© 2025 ContaAyC — Uso educativo libre</p>
-    <span class="footer-version">v1.0 — Solo Android</span>
-  </div>
+  <div class="footer-bottom"><p class="footer-copy">© 2025 ContaAyC — Uso educativo libre</p><span class="footer-version">v1.0 — Solo Android</span></div>
 </footer>
 
 <script>
-  // ── Navbar toggle mobile ─────────────────────────────────────────────────
   const toggle = document.getElementById('navToggle');
-  const links  = document.getElementById('navLinks');
+  const links = document.getElementById('navLinks');
   toggle.addEventListener('click', () => links.classList.toggle('open'));
   links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
 
-  // ── Scroll reveal ────────────────────────────────────────────────────────
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-  // ── FAQ accordion ────────────────────────────────────────────────────────
   function toggleFaq(btn) {
     const isOpen = btn.classList.contains('open');
     document.querySelectorAll('.faq-q').forEach(q => {
@@ -1327,10 +639,9 @@
     }
   }
 
-  // ── Navbar scroll shadow ─────────────────────────────────────────────────
   window.addEventListener('scroll', () => {
-    document.querySelector('nav').style.boxShadow =
-      window.scrollY > 20 ? '0 4px 24px rgba(0,0,0,.3)' : 'none';
+    const nav = document.querySelector('nav');
+    nav.style.boxShadow = window.scrollY > 20 ? '0 4px 24px rgba(0,0,0,.3)' : 'none';
   });
 </script>
 </body>
