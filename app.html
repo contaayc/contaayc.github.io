@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ContaAyC — Calculadora Financiera</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ── Variables ── */
+    :root {
+      --azul:    #0A1F3D;
+      --azul2:   #0d2a52;
+      --dorado:  #C9A84C;
+      --dorado2: #e8c46a;
+      --gris:    #F4F6FA;
+      --borde:   #E2E8F0;
+      --texto:   #1a2a3a;
+      --sub:     #6B7888;
+      --verde:   #2E7D32;
+      --rojo:    #C62828;
+      --naranja: #E67E22;
+      --blanco:  #ffffff;
+      --sidebar: 260px;
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--gris); color: var(--texto); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar); min-height: 100vh;
+      background: var(--azul);
+      display: flex; flex-direction: column;
+      position: fixed; left: 0; top: 0; bottom: 0;
+      z-index: 100;
+      border-right: 1px solid rgba(201,168,76,.15);
+    }
+    .sidebar-brand {
+      padding: 28px 20px 24px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .brand-logo {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--dorado);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 16px; font-weight: 900; color: var(--azul);
+      margin-bottom: 12px;
+    }
+    .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px; font-weight: 700; color: var(--blanco);
+      line-height: 1.1; margin-bottom: 4px;
+    }
+    .brand-sub { font-size: 11px; color: rgba(255,255,255,.4); letter-spacing: .5px; }
+    .sidebar-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 1.8px;
+      text-transform: uppercase; color: rgba(255,255,255,.3);
+      padding: 20px 20px 8px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 20px; cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all .2s; margin: 1px 0;
+      border-radius: 0 8px 8px 0;
+      margin-right: 12px;
+    }
+    .nav-item:hover { background: rgba(255,255,255,.06); border-left-color: rgba(201,168,76,.4); }
+    .nav-item.active { background: rgba(201,168,76,.12); border-left-color: var(--dorado); }
+    .nav-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+      transition: transform .2s;
+    }
+    .nav-item:hover .nav-icon { transform: scale(1.1); }
+    .nav-text { flex: 1; }
+    .nav-title { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.85); line-height: 1.2; }
+    .nav-item.active .nav-title { color: var(--dorado); }
+    .nav-sub { font-size: 11px; color: rgba(255,255,255,.35); margin-top: 1px; }
+    .sidebar-footer {
+      margin-top: auto; padding: 16px 20px;
+      border-top: 1px solid rgba(255,255,255,.06);
+      font-size: 11px; color: rgba(255,255,255,.25);
+    }
+
+    /* ── Main ── */
+    .main { margin-left: var(--sidebar); flex: 1; min-height: 100vh; }
+
+    /* ── Header ── */
+    .header {
+      background: var(--blanco);
+      border-bottom: 1px solid var(--borde);
+      padding: 20px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 50;
+    }
+    .header-left h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px; font-weight: 700; color: var(--azul);
+    }
+    .header-left p { font-size: 13px; color: var(--sub); margin-top: 2px; font-weight: 300; }
+    .formula-badge {
+      background: var(--azul); color: var(--dorado);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px; font-weight: 500;
+      padding: 8px 16px; border-radius: 8px;
+      letter-spacing: .3px;
+    }
+
+    /* ── Content ── */
+    .content { padding: 36px 40px 60px; max-width: 900px; }
+
+    /* ── Selector variable ── */
+    .var-selector { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+    .var-btn {
+      padding: 10px 20px; border-radius: 50px;
+      border: 1.5px solid var(--borde);
+      background: var(--blanco);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 600; color: var(--sub);
+      cursor: pointer; transition: all .2s;
+    }
+    .var-btn:hover { border-color: var(--azul); color: var(--azul); }
+    .var-btn.active { background: var(--azul); border-color: var(--azul); color: var(--dorado); }
+
+    /* ── Campos ── */
+    .campos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .campo { display: flex; flex-direction: column; gap: 6px; }
+    .campo label { font-size: 11px; font-weight: 700; color: var(--sub); letter-spacing: .8px; text-transform: uppercase; }
+    .campo-input-wrap { display: flex; align-items: center; gap: 0; }
+    .campo-prefix {
+      background: var(--gris); border: 1.5px solid var(--borde); border-right: none;
+      padding: 12px 14px; border-radius: 10px 0 0 10px;
+      font-size: 14px; font-weight: 700; color: var(--azul);
+    }
+    .campo input {
+      flex: 1; border: 1.5px solid var(--borde);
+      border-radius: 0 10px 10px 0;
+      padding: 12px 14px; font-family: 'DM Mono', monospace;
+      font-size: 15px; color: var(--azul); background: var(--blanco);
+      outline: none; transition: border-color .2s;
+    }
+    .campo input:focus { border-color: var(--azul); }
+    .campo input.no-prefix { border-radius: 10px; }
+    .campo-suffix {
+      background: var(--gris); border: 1.5px solid var(--borde); border-left: none;
+      padding: 12px 14px; border-radius: 0 10px 10px 0;
+      font-size: 13px; font-weight: 600; color: var(--sub);
+    }
+    .campo input.with-suffix { border-radius: 10px 0 0 10px; }
+
+    /* ── Resultados ── */
+    .resultados { border-radius: 16px; overflow: hidden; border: 1.5px solid var(--borde); margin-top: 8px; }
+    .resultado-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 20px; background: var(--blanco);
+      border-bottom: 1px solid var(--borde);
+    }
+    .resultado-row:last-child { border-bottom: none; }
+    .resultado-row.highlight { background: var(--azul); }
+    .resultado-row.interes { background: var(--dorado); }
+    .resultado-row.positivo { background: #E8F5E9; }
+    .resultado-row.negativo { background: #FFEBEE; }
+    .resultado-label { font-size: 13px; font-weight: 500; color: var(--sub); }
+    .resultado-row.highlight .resultado-label { color: var(--dorado); }
+    .resultado-row.interes .resultado-label { color: var(--azul); font-weight: 700; }
+    .resultado-row.positivo .resultado-label { color: var(--verde); font-weight: 600; }
+    .resultado-row.negativo .resultado-label { color: var(--rojo); font-weight: 600; }
+    .resultado-valor {
+      font-family: 'DM Mono', monospace;
+      font-size: 18px; font-weight: 500; color: var(--azul);
+    }
+    .resultado-row.highlight .resultado-valor { color: var(--blanco); font-size: 20px; }
+    .resultado-row.interes .resultado-valor { color: var(--azul); font-size: 20px; }
+    .resultado-row.positivo .resultado-valor { color: var(--verde); }
+    .resultado-row.negativo .resultado-valor { color: var(--rojo); }
+
+    /* ── Toggle switch ── */
+    .switch-card {
+      background: var(--blanco); border: 1.5px solid var(--borde);
+      border-radius: 14px; padding: 16px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .switch-texts h4 { font-size: 14px; font-weight: 700; color: var(--azul); }
+    .switch-texts p { font-size: 12px; color: var(--sub); margin-top: 3px; font-weight: 300; }
+    .toggle-wrap { display: flex; align-items: center; gap: 10px; }
+    .toggle-label { font-size: 12px; font-weight: 600; color: var(--sub); }
+    .toggle {
+      position: relative; width: 52px; height: 28px;
+      background: #CBD5E1; border-radius: 50px; cursor: pointer;
+      transition: background .25s;
+    }
+    .toggle.on { background: var(--azul); }
+    .toggle::after {
+      content: ''; position: absolute;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: white; top: 4px; left: 4px;
+      transition: transform .25s;
+      box-shadow: 0 2px 6px rgba(0,0,0,.2);
+    }
+    .toggle.on::after { transform: translateX(24px); }
+
+    /* ── Tasas tabs ── */
+    .denom-row { display: flex; gap: 8px; margin-bottom: 16px; }
+    .denom-btn {
+      flex: 1; padding: 10px; border-radius: 10px;
+      border: 1.5px solid var(--borde); background: var(--blanco);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 600; color: var(--sub);
+      cursor: pointer; transition: all .2s; text-align: center;
+    }
+    .denom-btn.active { background: var(--azul); border-color: var(--azul); color: var(--dorado); }
+    .freq-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+    .freq-btn {
+      padding: 8px 14px; border-radius: 8px;
+      border: 1.5px solid var(--borde); background: var(--blanco);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px; font-weight: 600; color: var(--sub);
+      cursor: pointer; transition: all .2s;
+    }
+    .freq-btn:hover:not(:disabled) { border-color: var(--naranja); color: var(--naranja); }
+    .freq-btn.active { background: var(--naranja); border-color: var(--naranja); color: white; }
+    .freq-btn:disabled { opacity: .3; cursor: not-allowed; }
+
+    /* ── EA Card ── */
+    .ea-card {
+      background: var(--azul); border-radius: 14px;
+      padding: 20px 24px; margin-bottom: 20px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .ea-label { font-size: 12px; color: rgba(255,255,255,.6); font-weight: 500; }
+    .ea-value { font-family: 'DM Mono', monospace; font-size: 28px; font-weight: 500; color: var(--dorado); }
+
+    /* ── Tabla equivalencias ── */
+    .tabla-wrap { border-radius: 14px; overflow: hidden; border: 1.5px solid var(--borde); }
+    .tabla-header-row { display: flex; background: var(--azul); padding: 12px 16px; }
+    .tabla-header-row span { font-size: 11px; font-weight: 700; color: var(--dorado); letter-spacing: .8px; text-transform: uppercase; }
+    .tabla-header-row .col-freq { flex: 1.3; }
+    .tabla-header-row .col-val { flex: 1; text-align: right; }
+    .tabla-data-row { display: flex; padding: 11px 16px; background: var(--blanco); border-bottom: 1px solid var(--borde); }
+    .tabla-data-row:nth-child(even) { background: #FAFBFD; }
+    .tabla-data-row:last-child { border-bottom: none; }
+    .tabla-data-row .col-freq { flex: 1.3; font-size: 13px; font-weight: 500; color: var(--azul); }
+    .tabla-data-row .col-val { flex: 1; text-align: right; font-family: 'DM Mono', monospace; font-size: 13px; color: var(--texto); }
+    .tabla-data-row.highlighted .col-freq { color: var(--naranja); font-weight: 700; }
+    .tabla-data-row.highlighted .col-val { color: var(--naranja); font-weight: 700; }
+
+    /* ── Tipo tabla selector ── */
+    .tipo-tabla-row { display: flex; gap: 8px; margin-bottom: 16px; }
+    .tipo-btn {
+      flex: 1; padding: 10px; border-radius: 10px;
+      border: 1.5px solid var(--borde); background: var(--blanco);
+      font-size: 13px; font-weight: 600; color: var(--sub);
+      cursor: pointer; transition: all .2s; text-align: center;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .tipo-btn.active-per { background: #1565C0; border-color: #1565C0; color: white; }
+    .tipo-btn.active-nom { background: #4A148C; border-color: #4A148C; color: white; }
+    .tipo-btn.active-vec { background: var(--naranja); border-color: var(--naranja); color: white; }
+    .tipo-btn.active-ant { background: #006064; border-color: #006064; color: white; }
+
+    /* ── Flujos VPN ── */
+    .flujos-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .flujo-row { display: flex; align-items: center; gap: 10px; }
+    .flujo-num {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--azul); color: var(--dorado);
+      font-family: 'Playfair Display', serif;
+      font-size: 14px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .flujo-btns { display: flex; gap: 8px; margin-top: 4px; }
+    .flujo-add, .flujo-del {
+      padding: 8px 16px; border-radius: 8px; border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      transition: all .2s;
+    }
+    .flujo-add { background: #E8F5E9; color: var(--verde); }
+    .flujo-add:hover { background: var(--verde); color: white; }
+    .flujo-del { background: #FFEBEE; color: var(--rojo); }
+    .flujo-del:hover { background: var(--rojo); color: white; }
+
+    /* ── Decision card ── */
+    .decision-card {
+      border-radius: 14px; padding: 20px 24px;
+      margin-top: 16px; text-align: center;
+      border: 2px solid;
+    }
+    .decision-text { font-size: 15px; font-weight: 700; }
+
+    /* ── Accordion fórmulas ── */
+    .accordion { margin-bottom: 20px; }
+    .accordion-btn {
+      width: 100%; background: var(--blanco);
+      border: 1.5px solid var(--borde); border-radius: 10px;
+      padding: 12px 16px; text-align: left;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 600; color: #1565C0;
+      cursor: pointer; display: flex; justify-content: space-between;
+      transition: border-color .2s;
+    }
+    .accordion-btn:hover { border-color: #1565C0; }
+    .accordion-body {
+      display: none; background: var(--azul);
+      border-radius: 10px; padding: 16px 20px;
+      margin-top: 6px;
+    }
+    .accordion-body.open { display: block; }
+    .accordion-body p {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px; color: var(--dorado);
+      margin-bottom: 6px; line-height: 1.7;
+    }
+    .accordion-body p:last-child { margin-bottom: 0; }
+
+    /* ── Section label ── */
+    .section-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--sub);
+      margin-bottom: 12px; display: block;
+    }
+
+    /* ── Sistema amort ── */
+    .sistema-row { display: flex; gap: 8px; margin-bottom: 16px; }
+    .sistema-btn {
+      flex: 1; padding: 10px; border-radius: 10px;
+      border: 1.5px solid var(--borde); background: var(--blanco);
+      font-size: 13px; font-weight: 600; color: var(--sub);
+      cursor: pointer; transition: all .2s; text-align: center;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .sistema-btn.active { background: var(--azul); border-color: var(--azul); color: var(--dorado); }
+
+    /* ── Tabla amortización ── */
+    .amort-table-wrap { overflow-x: auto; border-radius: 14px; border: 1.5px solid var(--borde); }
+    table { width: 100%; border-collapse: collapse; min-width: 500px; }
+    thead tr { background: var(--azul); }
+    thead th { padding: 11px 14px; text-align: right; font-size: 11px; font-weight: 700; color: var(--dorado); letter-spacing: .8px; }
+    thead th:first-child { text-align: center; }
+    tbody tr { border-bottom: 1px solid var(--borde); }
+    tbody tr:nth-child(even) { background: #FAFBFD; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody td { padding: 10px 14px; font-size: 13px; font-family: 'DM Mono', monospace; text-align: right; color: var(--texto); }
+    tbody td:first-child { text-align: center; font-weight: 700; color: var(--dorado); }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      :root { --sidebar: 0px; }
+      .sidebar { transform: translateX(-260px); width: 260px; transition: transform .3s; }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .content { padding: 20px; }
+      .header { padding: 16px 20px; }
+      .campos-grid { grid-template-columns: 1fr; }
+      .hamburger { display: flex; }
+    }
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer; padding: 4px;
+    }
+    .hamburger span { width: 22px; height: 2px; background: var(--azul); border-radius: 2px; }
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 90; }
+    .overlay.show { display: block; }
+  </style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-logo">AyC</div>
+    <div class="brand-name">ContaAyC</div>
+    <div class="brand-sub">Matemática Financiera</div>
+  </div>
+  <div class="sidebar-label">Calculadoras</div>
+  <div class="nav-item active" onclick="showCalc('simple')">
+    <div class="nav-icon" style="background:rgba(201,168,76,.15)">📐</div>
+    <div class="nav-text">
+      <div class="nav-title">Interés Simple</div>
+      <div class="nav-sub">VA, VF, i% o n</div>
+    </div>
+  </div>
+  <div class="nav-item" onclick="showCalc('compuesto')">
+    <div class="nav-icon" style="background:rgba(74,144,217,.15)">📈</div>
+    <div class="nav-text">
+      <div class="nav-title">Interés Compuesto</div>
+      <div class="nav-sub">Capitalización</div>
+    </div>
+  </div>
+  <div class="nav-item" onclick="showCalc('tasas')">
+    <div class="nav-icon" style="background:rgba(230,126,34,.15)">🔄</div>
+    <div class="nav-text">
+      <div class="nav-title">Tasas de Interés</div>
+      <div class="nav-sub">Conversión y equivalencias</div>
+    </div>
+  </div>
+  <div class="nav-item" onclick="showCalc('anualidades')">
+    <div class="nav-icon" style="background:rgba(93,184,122,.15)">💰</div>
+    <div class="nav-text">
+      <div class="nav-title">Anualidades</div>
+      <div class="nav-sub">Préstamos y ahorros</div>
+    </div>
+  </div>
+  <div class="nav-item" onclick="showCalc('vpntir')">
+    <div class="nav-icon" style="background:rgba(155,89,182,.15)">📊</div>
+    <div class="nav-text">
+      <div class="nav-title">VPN y TIR</div>
+      <div class="nav-sub">Evaluación de proyectos</div>
+    </div>
+  </div>
+  <div class="sidebar-footer">v1.0 · ContaAyC Financiero</div>
+</aside>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+  <!-- Header -->
+  <header class="header">
+    <div style="display:flex;align-items:center;gap:16px">
+      <button class="hamburger" onclick="openSidebar()">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="header-left">
+        <h1 id="headerTitle">Interés Simple</h1>
+        <p id="headerSub">Selecciona la variable que deseas calcular</p>
+      </div>
+    </div>
+    <div class="formula-badge" id="formulaBadge">I = VA × i% × n</div>
+  </header>
+
+  <!-- ════════════════ INTERÉS SIMPLE ════════════════ -->
+  <div class="content" id="calc-simple">
+    <span class="section-label">¿Qué deseas calcular?</span>
+    <div class="var-selector">
+      <button class="var-btn active" onclick="setVarSimple('VA',this)">Valor Actual (VA)</button>
+      <button class="var-btn" onclick="setVarSimple('VF',this)">Valor Futuro (VF)</button>
+      <button class="var-btn" onclick="setVarSimple('i',this)">Tasa (i%)</button>
+      <button class="var-btn" onclick="setVarSimple('n',this)">Tiempo (n)</button>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAccordion(this)">▼ Ver fórmula aplicada</button>
+      <div class="accordion-body" id="simpleFormula">
+        <p id="simpleFormulaText">VA = VF / (1 + i% × n)</p>
+      </div>
+    </div>
+
+    <div class="campos-grid" id="simpleCampos"></div>
+
+    <div class="resultados" id="simpleResultados"></div>
+  </div>
+
+  <!-- ════════════════ INTERÉS COMPUESTO ════════════════ -->
+  <div class="content" id="calc-compuesto" style="display:none">
+    <span class="section-label">¿Qué deseas calcular?</span>
+    <div class="var-selector">
+      <button class="var-btn active" onclick="setVarComp('VA',this)">Valor Actual (VA)</button>
+      <button class="var-btn" onclick="setVarComp('VF',this)">Valor Futuro (VF)</button>
+      <button class="var-btn" onclick="setVarComp('i',this)">Tasa (i%)</button>
+      <button class="var-btn" onclick="setVarComp('n',this)">Tiempo (n)</button>
+    </div>
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAccordion(this)">▼ Ver fórmula aplicada</button>
+      <div class="accordion-body" id="compFormula">
+        <p id="compFormulaText">VA = VF / (1 + i%)ⁿ</p>
+      </div>
+    </div>
+    <div class="campos-grid" id="compCampos"></div>
+    <div class="resultados" id="compResultados"></div>
+  </div>
+
+  <!-- ════════════════ TASAS DE INTERÉS ════════════════ -->
+  <div class="content" id="calc-tasas" style="display:none">
+    <span class="section-label">Denominación</span>
+    <div class="denom-row">
+      <button class="denom-btn active" onclick="setDenom('Efectiva',this)">Efectiva</button>
+      <button class="denom-btn" onclick="setDenom('Periódica',this)">Periódica</button>
+      <button class="denom-btn" onclick="setDenom('Nominal',this)">Nominal</button>
+    </div>
+
+    <span class="section-label" id="freqLabel" style="display:none">Frecuencia</span>
+    <div class="freq-grid" id="freqGrid"></div>
+
+    <div class="campos-grid" style="grid-template-columns:1fr">
+      <div class="campo">
+        <label>Ingrese la tasa de interés <span id="tasaInputLabel" style="color:var(--naranja);font-style:italic"></span></label>
+        <div class="campo-input-wrap">
+          <input type="number" id="tasaInput" placeholder="Ej: 24" oninput="calcTasas()" class="no-prefix" style="border-radius:10px 0 0 10px">
+          <div class="campo-suffix">%</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="eaSection" style="display:none">
+      <div class="ea-card">
+        <div>
+          <div class="ea-label">Tasa Efectiva Anual equivalente</div>
+        </div>
+        <div class="ea-value" id="eaValue">—</div>
+      </div>
+
+      <span class="section-label">Ver equivalencias en</span>
+      <div class="tipo-tabla-row" style="margin-bottom:8px">
+        <button class="tipo-btn active-per" id="btnPer" onclick="setTipoTabla('Per',this)">Tasa Periódica</button>
+        <button class="tipo-btn" id="btnNom" onclick="setTipoTabla('Nom',this)" style="border-color:var(--borde);background:var(--blanco);color:var(--sub)">Tasa Nominal</button>
+      </div>
+      <div class="tipo-tabla-row">
+        <button class="tipo-btn active-vec" id="btnVec" onclick="setModoTasa('Vencida',this)">Vencidas</button>
+        <button class="tipo-btn" id="btnAnt" onclick="setModoTasa('Anticipada',this)" style="border-color:var(--borde);background:var(--blanco);color:var(--sub)">Anticipadas</button>
+      </div>
+
+      <span class="section-label" style="margin-top:16px">Tabla de equivalencias</span>
+      <div class="tabla-wrap" id="tasasTabla"></div>
+
+      <div class="accordion" style="margin-top:16px">
+        <button class="accordion-btn" onclick="toggleAccordion(this)">▼ Ver fórmulas de conversión</button>
+        <div class="accordion-body" id="tasasFormulas"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ ANUALIDADES ════════════════ -->
+  <div class="content" id="calc-anualidades" style="display:none">
+    <span class="section-label">Tipo de anualidad</span>
+    <div class="denom-row" style="margin-bottom:20px">
+      <button class="denom-btn active" onclick="setTipoAnual('Vencida',this)">Anualidad Vencida</button>
+      <button class="denom-btn" onclick="setTipoAnual('Anticipada',this)">Anualidad Anticipada</button>
+    </div>
+
+    <span class="section-label">¿Qué deseas calcular?</span>
+    <div class="var-selector" style="margin-bottom:20px">
+      <button class="var-btn active" onclick="setVarAnual('A',this)">Anualidad (A)</button>
+      <button class="var-btn" onclick="setVarAnual('VA',this)">Valor Actual</button>
+      <button class="var-btn" onclick="setVarAnual('VF',this)">Valor Futuro</button>
+      <button class="var-btn" onclick="setVarAnual('i',this)">Tasa (i%)</button>
+      <button class="var-btn" onclick="setVarAnual('n',this)">Tiempo (n)</button>
+    </div>
+
+    <div id="anualSwitch"></div>
+    <div class="campos-grid" id="anualCampos"></div>
+
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAccordion(this)">▼ Ver fórmula aplicada</button>
+      <div class="accordion-body" id="anualFormula"><p id="anualFormulaText"></p></div>
+    </div>
+
+    <div class="resultados" id="anualResultados"></div>
+    <div id="anualTablaBtn" style="margin-top:16px;display:none"></div>
+    <div id="anualTablaSection" style="display:none;margin-top:16px">
+      <span class="section-label">Sistema de amortización</span>
+      <div class="sistema-row" id="sistemaRow"></div>
+      <div class="amort-table-wrap"><table id="amortTable"><thead></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- ════════════════ VPN Y TIR ════════════════ -->
+  <div class="content" id="calc-vpntir" style="display:none">
+    <div class="campos-grid" style="grid-template-columns:1fr 1fr;margin-bottom:20px">
+      <div class="campo">
+        <label>Inversión inicial</label>
+        <div class="campo-input-wrap">
+          <div class="campo-prefix">$</div>
+          <input type="text" id="vpnInversion" placeholder="Ej: 10.000.000" oninput="this.value=fmtInput(this.value);calcVPN()">
+        </div>
+      </div>
+      <div class="campo">
+        <label>Tasa de descuento (i)</label>
+        <div class="campo-input-wrap">
+          <input type="number" id="vpnTasa" placeholder="Ej: 12" oninput="calcVPN()" class="with-suffix">
+          <div class="campo-suffix">%</div>
+        </div>
+      </div>
+    </div>
+
+    <span class="section-label">Flujos de Caja</span>
+    <div class="flujos-list" id="flujosList"></div>
+    <div class="flujo-btns">
+      <button class="flujo-add" onclick="agregarFlujo()">+ Agregar período</button>
+      <button class="flujo-del" onclick="eliminarFlujo()">− Eliminar</button>
+    </div>
+
+    <div class="resultados" id="vpnResultados" style="margin-top:20px"></div>
+    <div id="vpnDecision"></div>
+  </div>
+
+</main>
+
+<script>
+// ══════════════════════════════════════════════════════
+// UTILIDADES
+// ══════════════════════════════════════════════════════
+const fmt = n => isNaN(n)||!isFinite(n)?'—':n.toLocaleString('es-CO',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmt4 = n => isNaN(n)||!isFinite(n)?'—':n.toLocaleString('es-CO',{minimumFractionDigits:4,maximumFractionDigits:4});
+
+function fmtInput(t){
+  const s=t.replace(/\./g,'').replace(/[^0-9,]/g,'');
+  const p=s.split(',');
+  const e=p[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  return p.length>1?e+','+p[1]:e;
+}
+function parseI(t){
+  if(!t)return 0;
+  return parseFloat(t.replace(/\./g,'').replace(',','.'))||0;
+}
+
+function toggleAccordion(btn){
+  const body=btn.nextElementSibling;
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open');
+  btn.textContent=(isOpen?'▼':'▲')+btn.textContent.slice(1);
+}
+
+// ══════════════════════════════════════════════════════
+// NAVEGACIÓN
+// ══════════════════════════════════════════════════════
+const calcIds=['simple','compuesto','tasas','anualidades','vpntir'];
+const calcTitles={
+  simple:['Interés Simple','Selecciona la variable que deseas calcular','VA = VF / (1 + i% × n)'],
+  compuesto:['Interés Compuesto','Selecciona la variable que deseas calcular','VF = VA × (1 + i%)ⁿ'],
+  tasas:['Tasas de Interés','Ingresa la tasa y selecciona denominación y frecuencia','Tabla de equivalencias'],
+  anualidades:['Anualidades','Préstamos y metas de ahorro con tabla de amortización','A = VA × [i/(1-(1+i)⁻ⁿ)]'],
+  vpntir:['VPN y TIR','Evaluación de viabilidad de proyectos de inversión','VPN = Σ[FC/(1+i)ᵗ] − I₀'],
+};
+
+function showCalc(id){
+  calcIds.forEach(c=>{
+    document.getElementById('calc-'+c).style.display='none';
+  });
+  document.getElementById('calc-'+id).style.display='block';
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  const t=calcTitles[id];
+  document.getElementById('headerTitle').textContent=t[0];
+  document.getElementById('headerSub').textContent=t[1];
+  document.getElementById('formulaBadge').textContent=t[2];
+  closeSidebar();
+}
+
+function openSidebar(){ document.getElementById('sidebar').classList.add('open'); document.getElementById('overlay').classList.add('show'); }
+function closeSidebar(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+
+// ══════════════════════════════════════════════════════
+// INTERÉS SIMPLE
+// ══════════════════════════════════════════════════════
+let varSimple='VA';
+const formulasSimple={
+  VA:'VA = VF / (1 + i% × n)',
+  VF:'VF = VA × (1 + i% × n)',
+  i:'i% = [(VF / VA) − 1] / n',
+  n:'n = [(VF / VA) − 1] / i%',
+};
+
+function setVarSimple(v,btn){
+  varSimple=v;
+  document.querySelectorAll('#calc-simple .var-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('simpleFormulaText').textContent=formulasSimple[v];
+  renderSimpleCampos();
+  calcSimple();
+}
+
+function renderSimpleCampos(){
+  const c=document.getElementById('simpleCampos');
+  c.innerHTML='';
+  if(varSimple!=='VA') c.innerHTML+=campoMonto('simVA','Valor Actual (VA)','Ej: 1.000.000','simVA');
+  if(varSimple!=='VF') c.innerHTML+=campoMonto('simVF','Valor Futuro (VF)','Ej: 1.200.000','simVF');
+  if(varSimple!=='i')  c.innerHTML+=campoPct('simI','Tasa de interés (i%)','Ej: 5','simI');
+  if(varSimple!=='n')  c.innerHTML+=campoNum('simN','Tiempo (n)','Ej: 12','períodos','simN');
+  c.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{
+    if(inp.type==='text') inp.value=fmtInput(inp.value);
+    calcSimple();
+  }));
+}
+
+function campoMonto(id,label,ph,eid){
+  return `<div class="campo"><label>${label}</label><div class="campo-input-wrap"><div class="campo-prefix">$</div><input type="text" id="${eid}" placeholder="${ph}"></div></div>`;
+}
+function campoPct(id,label,ph,eid){
+  return `<div class="campo"><label>${label}</label><div class="campo-input-wrap"><input type="number" id="${eid}" placeholder="${ph}" class="with-suffix"><div class="campo-suffix">%</div></div></div>`;
+}
+function campoNum(id,label,ph,suf,eid){
+  return `<div class="campo"><label>${label}</label><div class="campo-input-wrap"><input type="number" id="${eid}" placeholder="${ph}" class="with-suffix"><div class="campo-suffix">${suf}</div></div></div>`;
+}
+
+function calcSimple(){
+  const VA=parseI(document.getElementById('simVA')?.value||'');
+  const VF=parseI(document.getElementById('simVF')?.value||'');
+  const i=(parseFloat(document.getElementById('simI')?.value)||0)/100;
+  const n=parseFloat(document.getElementById('simN')?.value)||0;
+  let res, resLabel, intPesos;
+
+  if(varSimple==='VA' && VF&&i&&n){ res=VF/(1+i*n); resLabel='Valor Actual (VA)'; intPesos=VF-res; }
+  else if(varSimple==='VF' && VA&&i&&n){ res=VA*(1+i*n); resLabel='Valor Futuro (VF)'; intPesos=res-VA; }
+  else if(varSimple==='i' && VA&&VF&&n){ res=((VF/VA)-1)/n*100; resLabel='Tasa (i%)'; intPesos=VF-VA; }
+  else if(varSimple==='n' && VA&&VF&&i){ res=((VF/VA)-1)/i; resLabel='Tiempo (n)'; intPesos=VF-VA; }
+
+  const cont=document.getElementById('simpleResultados');
+  if(res===undefined){ cont.innerHTML=''; return; }
+
+  const esI=varSimple==='i', esN=varSimple==='n';
+  cont.innerHTML=`
+    <div class="resultado-row highlight">
+      <span class="resultado-label">${resLabel}</span>
+      <span class="resultado-valor">${esI?fmt4(res)+' %':esN?fmt(res)+' períodos':'$ '+fmt(res)}</span>
+    </div>
+    ${intPesos!==undefined?`<div class="resultado-row interes"><span class="resultado-label">Interés en pesos</span><span class="resultado-valor">$ ${fmt(Math.abs(intPesos))}</span></div>`:''}
+  `;
+}
+
+// ══════════════════════════════════════════════════════
+// INTERÉS COMPUESTO
+// ══════════════════════════════════════════════════════
+let varComp='VA';
+const formulasComp={
+  VA:'VA = VF / (1 + i%)ⁿ  ó  VA = VF × (1 + i%)⁻ⁿ',
+  VF:'VF = VA × (1 + i%)ⁿ',
+  i:'i% = (VF / VA)^(1/n) − 1',
+  n:'n = Ln(VF / VA) / Ln(1 + i%)',
+};
+
+function setVarComp(v,btn){
+  varComp=v;
+  document.querySelectorAll('#calc-compuesto .var-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('compFormulaText').textContent=formulasComp[v];
+  renderCompCampos();
+  calcComp();
+}
+
+function renderCompCampos(){
+  const c=document.getElementById('compCampos');
+  c.innerHTML='';
+  if(varComp!=='VA') c.innerHTML+=campoMonto('cVA','Valor Actual (VA)','Ej: 1.000.000','cVA');
+  if(varComp!=='VF') c.innerHTML+=campoMonto('cVF','Valor Futuro (VF)','Ej: 1.200.000','cVF');
+  if(varComp!=='i')  c.innerHTML+=campoPct('cI','Tasa por período (i%)','Ej: 2','cI');
+  if(varComp!=='n')  c.innerHTML+=campoNum('cN','Número de períodos (n)','Ej: 12','períodos','cN');
+  c.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{
+    if(inp.type==='text') inp.value=fmtInput(inp.value);
+    calcComp();
+  }));
+}
+
+function calcComp(){
+  const VA=parseI(document.getElementById('cVA')?.value||'');
+  const VF=parseI(document.getElementById('cVF')?.value||'');
+  const i=(parseFloat(document.getElementById('cI')?.value)||0)/100;
+  const n=parseFloat(document.getElementById('cN')?.value)||0;
+  let res, resLabel, intPesos;
+
+  if(varComp==='VA' && VF&&i&&n){ res=VF/Math.pow(1+i,n); resLabel='Valor Actual (VA)'; intPesos=VF-res; }
+  else if(varComp==='VF' && VA&&i&&n){ res=VA*Math.pow(1+i,n); resLabel='Valor Futuro (VF)'; intPesos=res-VA; }
+  else if(varComp==='i' && VA&&VF&&n){ res=(Math.pow(VF/VA,1/n)-1)*100; resLabel='Tasa (i%)'; intPesos=VF-VA; }
+  else if(varComp==='n' && VA&&VF&&i){ res=Math.log(VF/VA)/Math.log(1+i); resLabel='Tiempo (n)'; intPesos=VF-VA; }
+
+  const cont=document.getElementById('compResultados');
+  if(res===undefined){ cont.innerHTML=''; return; }
+
+  const esI=varComp==='i', esN=varComp==='n';
+  cont.innerHTML=`
+    <div class="resultado-row highlight">
+      <span class="resultado-label">${resLabel}</span>
+      <span class="resultado-valor">${esI?fmt4(res)+' %':esN?fmt(res)+' períodos':'$ '+fmt(res)}</span>
+    </div>
+    ${intPesos!==undefined?`<div class="resultado-row interes"><span class="resultado-label">Interés en pesos</span><span class="resultado-valor">$ ${fmt(Math.abs(intPesos))}</span></div>`:''}
+  `;
+}
+
+// ══════════════════════════════════════════════════════
+// TASAS DE INTERÉS
+// ══════════════════════════════════════════════════════
+const FREQS=[
+  {key:'anual',label:'Anual',k:1},
+  {key:'semestral',label:'Semestral',k:2},
+  {key:'cuatrimestral',label:'Cuatrimestral',k:3},
+  {key:'trimestral',label:'Trimestral',k:4},
+  {key:'bimestral',label:'Bimestral',k:6},
+  {key:'mensual',label:'Mensual',k:12},
+  {key:'quincenal',label:'Quincenal',k:24},
+  {key:'semanal',label:'Semanal',k:52},
+  {key:'diaria',label:'Diaria',k:365},
+];
+const FREQS_TABLA=FREQS.filter(f=>f.key!=='anual');
+
+let tDenom='Efectiva', tFreq=FREQS[0], tTipoTabla='Per', tModoTasa='Vencida';
+
+function setDenom(d,btn){
+  tDenom=d;
+  document.querySelectorAll('.denom-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(d==='Efectiva') tFreq=FREQS[0];
+  else tFreq=FREQS[5];
+  document.getElementById('tasaInput').value='';
+  document.getElementById('eaSection').style.display='none';
+  renderFreqGrid();
+  updateTasaLabel();
+}
+
+function renderFreqGrid(){
+  const grid=document.getElementById('freqGrid');
+  const label=document.getElementById('freqLabel');
+  if(tDenom==='Efectiva'){ grid.style.display='none'; label.style.display='none'; return; }
+  label.style.display='block'; grid.style.display='flex';
+  grid.innerHTML=FREQS.map(f=>{
+    const bloq=(tDenom==='Efectiva'&&f.key!=='anual')||(tDenom!=='Efectiva'&&f.key==='anual');
+    return `<button class="freq-btn${tFreq.key===f.key?' active':''}" ${bloq?'disabled':''} onclick="setFreq('${f.key}',this)">${f.label}</button>`;
+  }).join('');
+}
+
+function setFreq(key,btn){
+  tFreq=FREQS.find(f=>f.key===key);
+  document.querySelectorAll('.freq-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tasaInput').value='';
+  document.getElementById('eaSection').style.display='none';
+  updateTasaLabel();
+}
+
+function updateTasaLabel(){
+  document.getElementById('tasaInputLabel').textContent=`— ${tDenom} ${tDenom!=='Efectiva'?tFreq.label:'Anual'}`;
+}
+
+function toEA(tasa,denom,k,modo){
+  const i=tasa/100;
+  if(denom==='Efectiva') return i;
+  if(modo==='Vencida'){
+    if(denom==='Periódica') return Math.pow(1+i,k)-1;
+    if(denom==='Nominal')   return Math.pow(1+i/k,k)-1;
+  } else {
+    if(denom==='Periódica') return Math.pow(1-i,-k)-1;
+    if(denom==='Nominal'){ const ip=i/k; return Math.pow(1-ip,-k)-1; }
+  }
+  return 0;
+}
+
+function ipDesdeEA(ea,k,modo){
+  if(modo==='Vencida') return Math.pow(1+ea,1/k)-1;
+  return 1-Math.pow(1+ea,-1/k);
+}
+
+function calcTasas(){
+  const tasa=parseFloat(document.getElementById('tasaInput').value)||0;
+  if(!tasa){ document.getElementById('eaSection').style.display='none'; return; }
+  const ea=toEA(tasa,tDenom,tFreq.k,tModoTasa);
+  document.getElementById('eaValue').textContent=fmt4(ea*100)+' %';
+  document.getElementById('eaSection').style.display='block';
+  renderTasasTabla(ea);
+  renderTasasFormulas();
+}
+
+function setTipoTabla(tipo,btn){
+  tTipoTabla=tipo;
+  document.getElementById('btnPer').style.cssText='';
+  document.getElementById('btnNom').style.cssText='';
+  if(tipo==='Per'){ btn.className='tipo-btn active-per'; document.getElementById('btnNom').className='tipo-btn'; document.getElementById('btnNom').style.cssText='border-color:var(--borde);background:var(--blanco);color:var(--sub)'; }
+  else { btn.className='tipo-btn active-nom'; document.getElementById('btnPer').className='tipo-btn'; document.getElementById('btnPer').style.cssText='border-color:var(--borde);background:var(--blanco);color:var(--sub)'; }
+  const tasa=parseFloat(document.getElementById('tasaInput').value)||0;
+  if(tasa){ const ea=toEA(tasa,tDenom,tFreq.k,tModoTasa); renderTasasTabla(ea); }
+}
+
+function setModoTasa(modo,btn){
+  tModoTasa=modo;
+  document.getElementById('btnVec').style.cssText='';
+  document.getElementById('btnAnt').style.cssText='';
+  if(modo==='Vencida'){ btn.className='tipo-btn active-vec'; document.getElementById('btnAnt').className='tipo-btn'; document.getElementById('btnAnt').style.cssText='border-color:var(--borde);background:var(--blanco);color:var(--sub)'; }
+  else { btn.className='tipo-btn active-ant'; document.getElementById('btnVec').className='tipo-btn'; document.getElementById('btnVec').style.cssText='border-color:var(--borde);background:var(--blanco);color:var(--sub)'; }
+  calcTasas();
+  renderTasasFormulas();
+}
+
+function renderTasasTabla(ea){
+  const t=document.getElementById('tasasTabla');
+  const col=tTipoTabla==='Per'?'ip (%)':'iN (%)';
+  let html=`<div class="tabla-header-row"><span class="col-freq">Frecuencia</span><span class="col-val">${col}</span></div>`;
+  FREQS_TABLA.forEach(f=>{
+    const ip=ipDesdeEA(ea,f.k,tModoTasa);
+    const val=tTipoTabla==='Per'?ip:ip*f.k;
+    const dest=tFreq.key===f.key?' highlighted':'';
+    html+=`<div class="tabla-data-row${dest}"><span class="col-freq">${f.label}</span><span class="col-val">${fmt4(val*100)} %</span></div>`;
+  });
+  t.innerHTML=html;
+}
+
+function renderTasasFormulas(){
+  const body=document.getElementById('tasasFormulas');
+  if(tModoTasa==='Vencida'){
+    body.innerHTML='<p>📌 ip = iN / K</p><p>📌 iN = ip × K</p><p>📌 ie = (1 + ip)ᴷ − 1</p><p>📌 ip = (1 + ie)^(1/K) − 1</p><p style="margin-top:10px;color:rgba(255,255,255,.4);font-size:11px">ip = Tasa periódica  |  iN = Nominal  |  ie = Efectiva anual  |  K = Frecuencia</p>';
+  } else {
+    body.innerHTML='<p>📌 ip = iN / K</p><p>📌 iN = ip × K</p><p>📌 ie = (1 − ip)⁻ᴷ − 1</p><p>📌 ip = [(1 + ie)^(−1/K) − 1] × −1</p><p style="margin-top:10px;color:rgba(255,255,255,.4);font-size:11px">ip = Tasa periódica  |  iN = Nominal  |  ie = Efectiva anual  |  K = Frecuencia</p>';
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// ANUALIDADES
+// ══════════════════════════════════════════════════════
+let varAnual='A', tipoAnual='Vencida', usaVA=true, sistemAnual='Frances';
+const formulasAnual={
+  A_VA:'A = VA × [i / (1 − (1+i)⁻ⁿ)]',
+  A_VF:'A = VF × [i / ((1+i)ⁿ − 1)]',
+  VA:'VA = A × [(1 − (1+i)⁻ⁿ) / i]',
+  VF:'VF = A × [((1+i)ⁿ − 1) / i]',
+  i:'i se calcula por iteración numérica (bisección)',
+  n_VA:'n = −Ln(1 − VA×i/A) / Ln(1+i)',
+  n_VF:'n = Ln(1 + VF×i/A) / Ln(1+i)',
+};
+
+function setTipoAnual(t,btn){
+  tipoAnual=t;
+  document.querySelectorAll('#calc-anualidades .denom-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  calcAnual();
+}
+function setVarAnual(v,btn){
+  varAnual=v;
+  document.querySelectorAll('#calc-anualidades .var-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAnualCampos();
+  calcAnual();
+}
+
+function renderAnualCampos(){
+  // Switch VA/VF
+  const sw=document.getElementById('anualSwitch');
+  const mostrarSwitch=(varAnual==='A'||varAnual==='i'||varAnual==='n');
+  if(mostrarSwitch){
+    sw.innerHTML=`<div class="switch-card">
+      <div class="switch-texts">
+        <h4>${usaVA?'🏦 Préstamo (Valor Actual)':'🎯 Meta de ahorro (Valor Futuro)'}</h4>
+        <p>${usaVA?'Calculando desde un valor presente':'Calculando hacia un valor futuro'}</p>
+      </div>
+      <div class="toggle-wrap">
+        <span class="toggle-label">${usaVA?'VA':'VF'}</span>
+        <div class="toggle ${usaVA?'on':''}" onclick="toggleUsaVA(this)"></div>
+      </div>
+    </div>`;
+  } else sw.innerHTML='';
+
+  const c=document.getElementById('anualCampos');
+  c.innerHTML='';
+  if(varAnual!=='A') c.innerHTML+=campoMonto('aA','Anualidad (A)','Ej: 500.000','aA');
+  if((varAnual==='A'||varAnual==='i'||varAnual==='n')&&usaVA) c.innerHTML+=campoMonto('aVA','Valor Actual (VA)','Ej: 10.000.000','aVA');
+  if((varAnual==='A'||varAnual==='i'||varAnual==='n')&&!usaVA) c.innerHTML+=campoMonto('aVF','Valor Futuro (VF)','Ej: 50.000.000','aVF');
+  if(varAnual==='VA') { /* no mostrar VA */ }
+  if(varAnual==='VF') { /* no mostrar VF */ }
+  if(varAnual!=='i') c.innerHTML+=campoPct('aI','Tasa por período (i%)','Ej: 1.5','aI');
+  if(varAnual!=='n') c.innerHTML+=campoNum('aN','Número de períodos (n)','Ej: 36','períodos','aN');
+
+  c.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{
+    if(inp.type==='text') inp.value=fmtInput(inp.value);
+    calcAnual();
+  }));
+
+  // Fórmula
+  let fKey=varAnual;
+  if(varAnual==='A') fKey=usaVA?'A_VA':'A_VF';
+  if(varAnual==='n') fKey=usaVA?'n_VA':'n_VF';
+  document.getElementById('anualFormulaText').textContent=formulasAnual[fKey]||'';
+}
+
+function toggleUsaVA(el){
+  usaVA=!usaVA;
+  renderAnualCampos();
+  calcAnual();
+}
+
+function cuotaFrances(saldo,i,n){
+  const ip=i/100;
+  if(ip===0||n===0) return saldo/(n||1);
+  return saldo*(ip/(1-Math.pow(1+ip,-n)));
+}
+
+function calcAnual(){
+  const A=parseI(document.getElementById('aA')?.value||'');
+  const VA=parseI(document.getElementById('aVA')?.value||'');
+  const VF=parseI(document.getElementById('aVF')?.value||'');
+  const i=parseFloat(document.getElementById('aI')?.value)||0;
+  const ip=i/100;
+  const n=parseFloat(document.getElementById('aN')?.value)||0;
+
+  const ant=tipoAnual==='Anticipada';
+  let res, resLabel, totalPagado, interes;
+
+  if(varAnual==='VA'){
+    const v=ip===0?A*n:A*((1-Math.pow(1+ip,-n))/ip);
+    res=ant?v*(1+ip):v; resLabel='Valor Actual (VA)'; totalPagado=A*n; interes=totalPagado-res;
+  } else if(varAnual==='VF'){
+    const v=ip===0?A*n:A*((Math.pow(1+ip,n)-1)/ip);
+    res=ant?v*(1+ip):v; resLabel='Valor Futuro (VF)'; totalPagado=A*n; interes=res-totalPagado;
+  } else if(varAnual==='A'){
+    const base=usaVA?VA:VF;
+    if(usaVA){ const a=ip===0?base/n:base*(ip/(1-Math.pow(1+ip,-n))); res=ant?a/(1+ip):a; }
+    else { const a=ip===0?base/n:base*(ip/(Math.pow(1+ip,n)-1)); res=ant?a/(1+ip):a; }
+    resLabel=usaVA?'Cuota a pagar':'Monto a ahorrar';
+    totalPagado=res*n; interes=usaVA?totalPagado-(usaVA?VA:VF):(usaVA?VA:VF)-totalPagado;
+  } else if(varAnual==='i'){
+    const base=usaVA?VA:VF;
+    let lo=0.000001,hi=10,mid=0;
+    for(let k=0;k<1000;k++){
+      mid=(lo+hi)/2;
+      const val=usaVA?A*((1-Math.pow(1+mid,-n))/mid)-base:A*((Math.pow(1+mid,n)-1)/mid)-base;
+      if(Math.abs(val)<0.001)break;
+      if(val>0)lo=mid;else hi=mid;
+    }
+    res=mid*100; resLabel='Tasa (i%)';
+  } else if(varAnual==='n'){
+    const base=usaVA?VA:VF;
+    res=usaVA?-Math.log(1-base*ip/A)/Math.log(1+ip):Math.log(1+base*ip/A)/Math.log(1+ip);
+    resLabel='Tiempo (n)';
+  }
+
+  const cont=document.getElementById('anualResultados');
+  if(res===undefined||isNaN(res)){ cont.innerHTML=''; document.getElementById('anualTablaBtn').style.display='none'; return; }
+
+  const esI=varAnual==='i', esN=varAnual==='n';
+  cont.innerHTML=`
+    <div class="resultado-row highlight">
+      <span class="resultado-label">${resLabel}</span>
+      <span class="resultado-valor">${esI?fmt4(res)+' %':esN?fmt(res)+' períodos':'$ '+fmt(res)}</span>
+    </div>
+    ${totalPagado!==undefined?`<div class="resultado-row"><span class="resultado-label">${usaVA||varAnual==='VA'?'Total pagado':'Total ahorrado'}</span><span class="resultado-valor">$ ${fmt(totalPagado)}</span></div>`:''}
+    ${interes!==undefined?`<div class="resultado-row interes"><span class="resultado-label">Total intereses</span><span class="resultado-valor">$ ${fmt(Math.abs(interes))}</span></div>`:''}
+  `;
+
+  // Botón tabla
+  const btnDiv=document.getElementById('anualTablaBtn');
+  const anualidadFinal=varAnual==='A'?res:A;
+  const esAmort=varAnual==='VA'||(varAnual!=='VF'&&usaVA);
+  if(!esI&&!esN&&anualidadFinal>0&&i>0&&n>0){
+    btnDiv.style.display='block';
+    btnDiv.innerHTML=`<button onclick="toggleTablaAnual()" style="width:100%;padding:16px;border-radius:14px;border:none;background:${esAmort?'var(--azul)':'#2E7D32'};color:${esAmort?'var(--dorado)':'white'};font-family:\'DM Sans\',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">
+      ${esAmort?'📋 Ver Tabla de Amortización':'📈 Ver Tabla de Capitalización'}
+    </button>`;
+    renderSistemas(anualidadFinal, esAmort, i, Math.round(n), esAmort?VA||res:VF||res);
+  } else {
+    btnDiv.style.display='none';
+    document.getElementById('anualTablaSection').style.display='none';
+  }
+}
+
+let tablaVisible=false;
+function toggleTablaAnual(){
+  tablaVisible=!tablaVisible;
+  document.getElementById('anualTablaSection').style.display=tablaVisible?'block':'none';
+}
+
+function renderSistemas(A,esAmort,i,n,base){
+  if(!esAmort){ renderTablaCapitalizacion(A,i,n); return; }
+  const sr=document.getElementById('sistemaRow');
+  sr.innerHTML=['Francés','Alemán','Americano'].map(s=>`<button class="sistema-btn${s===sistemAnual?' active':''}" onclick="setSistema('${s}',${A},${i},${n},${base})">${s}</button>`).join('');
+  renderTablaAmort(A,i,n,base,sistemAnual);
+}
+
+function setSistema(s,A,i,n,base){
+  sistemAnual=s;
+  document.querySelectorAll('.sistema-btn').forEach(b=>b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  renderTablaAmort(A,i,n,base,s);
+}
+
+function renderTablaAmort(A,i,n,base,sistema){
+  const ip=i/100;
+  let rows=[], saldo=base;
+  const cuotaN=cuotaFrances(base,i,n);
+  const capFijo=base/n;
+
+  for(let k=1;k<=n&&saldo>0.01;k++){
+    const int=saldo*ip;
+    let cuota,capital;
+    if(sistema==='Francés'){ cuota=Math.min(cuotaN,saldo+int); capital=cuota-int; }
+    else if(sistema==='Alemán'){ capital=Math.min(capFijo,saldo); cuota=capital+int; }
+    else { capital=k===n?saldo:0; cuota=k===n?saldo+int:int; }
+    saldo=Math.max(0,saldo-capital);
+    rows.push({k,cuota,int,capital,saldo});
+    if(saldo<=0.01)break;
+  }
+
+  const thead=document.querySelector('#amortTable thead');
+  const tbody=document.querySelector('#amortTable tbody');
+  thead.innerHTML='<tr><th>#</th><th>Cuota</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr>';
+  tbody.innerHTML=rows.map(r=>`<tr><td>${r.k}</td><td>$ ${fmt(r.cuota)}</td><td>$ ${fmt(r.int)}</td><td>$ ${fmt(r.capital)}</td><td>$ ${fmt(r.saldo)}</td></tr>`).join('');
+  document.getElementById('anualTablaSection').style.display='block';
+  tablaVisible=true;
+}
+
+function renderTablaCapitalizacion(A,i,n){
+  const ip=i/100;
+  let saldo=0, rows=[];
+  for(let k=1;k<=n;k++){
+    const int=saldo*ip;
+    saldo=saldo+int+A;
+    rows.push({k,dep:A,int,saldo});
+  }
+  document.getElementById('sistemaRow').innerHTML='';
+  const thead=document.querySelector('#amortTable thead');
+  const tbody=document.querySelector('#amortTable tbody');
+  thead.innerHTML='<tr><th>#</th><th>Depósito</th><th>Interés</th><th>Saldo</th></tr>';
+  tbody.innerHTML=rows.map(r=>`<tr><td>${r.k}</td><td>$ ${fmt(r.dep)}</td><td>$ ${fmt(r.int)}</td><td>$ ${fmt(r.saldo)}</td></tr>`).join('');
+  document.getElementById('anualTablaSection').style.display='block';
+  tablaVisible=true;
+}
+
+// ══════════════════════════════════════════════════════
+// VPN Y TIR
+// ══════════════════════════════════════════════════════
+let flujos=['','','','',''];
+
+function renderFlujos(){
+  const list=document.getElementById('flujosList');
+  list.innerHTML=flujos.map((f,i)=>`
+    <div class="flujo-row">
+      <div class="flujo-num">${i+1}</div>
+      <div class="campo-input-wrap" style="flex:1">
+        <div class="campo-prefix">$</div>
+        <input type="text" value="${f}" placeholder="Ej: 3.000.000"
+          oninput="flujos[${i}]=fmtInput(this.value);this.value=flujos[${i}];calcVPN()"
+          style="flex:1;border:1.5px solid var(--borde);padding:12px 14px;font-family:\'DM Mono\',monospace;font-size:15px;color:var(--azul);background:var(--blanco);outline:none;border-radius:0 10px 10px 0;border-left:none">
+      </div>
+    </div>
+  `).join('');
+}
+
+function agregarFlujo(){ flujos.push(''); renderFlujos(); }
+function eliminarFlujo(){ if(flujos.length>1){ flujos.pop(); renderFlujos(); calcVPN(); } }
+
+function calcVPN(){
+  const I=parseI(document.getElementById('vpnInversion').value||'');
+  const tasa=parseFloat(document.getElementById('vpnTasa').value)||0;
+  const ip=tasa/100;
+
+  const flujosNum=flujos.map(f=>parseI(f));
+  const vpn=flujosNum.reduce((acc,f,idx)=>acc+f/Math.pow(1+ip,idx+1),0)-I;
+
+  // TIR bisección
+  let tir=null;
+  const suma=flujosNum.reduce((a,b)=>a+b,0);
+  if(suma>I){
+    const npv=r=>flujosNum.reduce((acc,f,idx)=>acc+f/Math.pow(1+r,idx+1),0)-I;
+    let lo=0,hi=10,mid=0;
+    for(let k=0;k<1000;k++){
+      mid=(lo+hi)/2;
+      const v=npv(mid);
+      if(Math.abs(v)<0.01)break;
+      if(v>0)lo=mid;else hi=mid;
+    }
+    tir=mid*100;
+  }
+
+  const cont=document.getElementById('vpnResultados');
+  const decDiv=document.getElementById('vpnDecision');
+
+  if(!I&&!flujosNum.some(f=>f>0)){ cont.innerHTML=''; decDiv.innerHTML=''; return; }
+
+  const clsVPN=vpn>0?'positivo':vpn<0?'negativo':'highlight';
+  cont.innerHTML=`
+    <div class="resultado-row ${clsVPN}">
+      <span class="resultado-label">Valor Presente Neto (VPN)</span>
+      <span class="resultado-valor">$ ${fmt(vpn)}</span>
+    </div>
+    <div class="resultado-row">
+      <span class="resultado-label">Tasa Interna de Retorno (TIR)</span>
+      <span class="resultado-valor">${tir!==null&&isFinite(tir)?fmt4(tir)+' %':'No aplica'}</span>
+    </div>
+    ${tir!==null&&isFinite(tir)?`<div class="resultado-row">
+      <span class="resultado-label">TIR vs Tasa de descuento</span>
+      <span class="resultado-valor" style="color:${tir>tasa?'var(--verde)':'var(--rojo)'}">${tir>tasa?'TIR > i ✅':'TIR < i ❌'}</span>
+    </div>`:''}
+  `;
+
+  if(isFinite(vpn)){
+    const color=vpn>0?'var(--verde)':vpn<0?'var(--rojo)':'var(--naranja)';
+    const texto=vpn>0?'✅ VIABLE — El proyecto genera valor':vpn<0?'❌ NO VIABLE — El proyecto destruye valor':'⚖️ INDIFERENTE — VPN = 0';
+    decDiv.innerHTML=`<div class="decision-card" style="border-color:${color}"><div class="decision-text" style="color:${color}">${texto}</div></div>`;
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// INICIALIZACIÓN
+// ══════════════════════════════════════════════════════
+renderSimpleCampos();
+renderCompCampos();
+renderFreqGrid();
+renderAnualCampos();
+renderFlujos();
+</script>
+</body>
+</html>
