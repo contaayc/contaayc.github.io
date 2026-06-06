@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ContaAyC — Calculadora Financiera</title>
-
-  <!-- Favicon usando tu logo PNG (subido a assets/logo.png) -->
+  <title>ContaAyC Financiero — Calculadora</title>
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
   <link rel="icon" type="image/png" href="assets/logo.png">
   <link rel="apple-touch-icon" href="assets/logo.png">
   
@@ -301,7 +300,56 @@
     }
     .decision-text { font-size: 15px; font-weight: 700; }
 
-    /* ── Accordion fórmulas ── */
+    /* ── Fórmula siempre visible ── */
+    .formula-visible {
+      background: var(--azul); border-radius: 12px;
+      padding: 14px 20px; margin-bottom: 20px;
+    }
+    .formula-visible p {
+      font-family: 'DM Mono', monospace;
+      font-size: 14px; color: var(--dorado);
+      line-height: 1.7; font-weight: 500;
+    }
+    /* ── Bloque fórmulas VPN/TIR ── */
+    .vpn-formulas {
+      background: var(--azul); border-radius: 14px;
+      padding: 20px 24px; margin-bottom: 24px;
+    }
+    .vpn-formulas h4 {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; color: rgba(255,255,255,.4);
+      margin-bottom: 14px;
+    }
+    .vpn-formula-box {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(201,168,76,.2);
+      border-radius: 10px; padding: 14px 18px; margin-bottom: 10px;
+    }
+    .vpn-formula-box:last-of-type { margin-bottom: 0; }
+    .vpn-formula-title {
+      font-size: 12px; font-weight: 700; color: var(--dorado);
+      margin-bottom: 8px; letter-spacing: .3px;
+    }
+    .vpn-formula-eq {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px; color: rgba(255,255,255,.85);
+      line-height: 2; letter-spacing: .2px;
+    }
+    .vpn-leyenda {
+      margin-top: 14px; padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+    .vpn-leyenda p {
+      font-size: 11px; color: rgba(255,255,255,.4);
+      line-height: 1.8;
+    }
+    .vpn-interp {
+      margin-top: 12px; display: flex; flex-direction: column; gap: 4px;
+    }
+    .vpn-interp span {
+      font-size: 12px; color: rgba(255,255,255,.6);
+      display: flex; align-items: center; gap: 8px;
+    }
     .accordion { margin-bottom: 20px; }
     .accordion-btn {
       width: 100%; background: var(--blanco);
@@ -381,8 +429,10 @@
 <!-- ── SIDEBAR ── -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-brand">
-    <div class="brand-logo">AyC</div>
-    <div class="brand-name">ContaAyC</div>
+    <div class="brand-logo" style="background:transparent;padding:0;overflow:hidden">
+      <img src="assets/logo.png" alt="ContaAyC" style="width:44px;height:44px;object-fit:contain;border-radius:10px">
+    </div>
+    <div class="brand-name">ContaAyC Financiero</div>
     <div class="brand-sub">Matemática Financiera</div>
   </div>
   <div class="sidebar-label">Calculadoras</div>
@@ -440,7 +490,7 @@
         <p id="headerSub">Selecciona la variable que deseas calcular</p>
       </div>
     </div>
-    <div class="formula-badge" id="formulaBadge">I = VA × i% × n</div>
+    <div class="formula-badge" id="formulaBadge" style="display:none"></div>
   </header>
 
   <!-- ════════════════ INTERÉS SIMPLE ════════════════ -->
@@ -453,11 +503,8 @@
       <button class="var-btn" onclick="setVarSimple('n',this)">Tiempo (n)</button>
     </div>
 
-    <div class="accordion">
-      <button class="accordion-btn" onclick="toggleAccordion(this)">▼ Ver fórmula aplicada</button>
-      <div class="accordion-body" id="simpleFormula">
-        <p id="simpleFormulaText">VA = VF / (1 + i% × n)</p>
-      </div>
+    <div class="formula-visible">
+      <p id="simpleFormulaText">VA = VF / (1 + i% × n)</p>
     </div>
 
     <div class="campos-grid" id="simpleCampos"></div>
@@ -474,11 +521,8 @@
       <button class="var-btn" onclick="setVarComp('i',this)">Tasa (i%)</button>
       <button class="var-btn" onclick="setVarComp('n',this)">Tiempo (n)</button>
     </div>
-    <div class="accordion">
-      <button class="accordion-btn" onclick="toggleAccordion(this)">▼ Ver fórmula aplicada</button>
-      <div class="accordion-body" id="compFormula">
-        <p id="compFormulaText">VA = VF / (1 + i%)ⁿ</p>
-      </div>
+    <div class="formula-visible">
+      <p id="compFormulaText">VA = VF / (1 + i%)ⁿ</p>
     </div>
     <div class="campos-grid" id="compCampos"></div>
     <div class="resultados" id="compResultados"></div>
@@ -527,10 +571,7 @@
       <span class="section-label" style="margin-top:16px">Tabla de equivalencias</span>
       <div class="tabla-wrap" id="tasasTabla"></div>
 
-      <div class="accordion" style="margin-top:16px">
-        <button class="accordion-btn" onclick="toggleAccordion(this)">▼ Ver fórmulas de conversión</button>
-        <div class="accordion-body" id="tasasFormulas"></div>
-      </div>
+      <div class="vpn-formulas" id="tasasFormulas" style="margin-top:16px"></div>
     </div>
   </div>
 
@@ -554,9 +595,8 @@
     <div id="anualSwitch"></div>
     <div class="campos-grid" id="anualCampos"></div>
 
-    <div class="accordion">
-      <button class="accordion-btn" onclick="toggleAccordion(this)">▼ Ver fórmula aplicada</button>
-      <div class="accordion-body" id="anualFormula"><p id="anualFormulaText"></p></div>
+    <div class="formula-visible">
+      <p id="anualFormulaText"></p>
     </div>
 
     <div class="resultados" id="anualResultados"></div>
@@ -596,6 +636,34 @@
 
     <div class="resultados" id="vpnResultados" style="margin-top:20px"></div>
     <div id="vpnDecision"></div>
+
+    <!-- Fórmulas VPN y TIR al final -->
+    <div class="vpn-formulas" style="margin-top:24px">
+      <h4>Fórmulas aplicadas</h4>
+      <div class="vpn-formula-box">
+        <div class="vpn-formula-title">Valor Presente Neto (VPN)</div>
+        <div class="vpn-formula-eq">VPN = −P + FNE₁/(1+TO)¹ + FNE₂/(1+TO)² + ... + FNEₙ/(1+TO)ⁿ</div>
+        <div class="vpn-interp">
+          <span>🟢 VPN &gt; 0 → Es viable (Ganancia)</span>
+          <span>🔴 VPN &lt; 0 → No es viable (Pérdida)</span>
+          <span>⚖️ VPN = 0 → Indiferente</span>
+        </div>
+      </div>
+      <div class="vpn-formula-box">
+        <div class="vpn-formula-title">Tasa Interna de Retorno (TIR)</div>
+        <div class="vpn-formula-eq">Inversión₀ = FNE₁/(1+TIR)¹ + FNE₂/(1+TIR)² + ... + FNEₙ/(1+TIR)ⁿ</div>
+        <div class="vpn-interp">
+          <span>🟢 Tasa descuento &lt; TIR → Es viable (Ganancia)</span>
+          <span>🔴 Tasa descuento &gt; TIR → No es viable (Pérdida)</span>
+          <span>⚖️ Tasa descuento = TIR → Indiferente</span>
+        </div>
+      </div>
+      <div class="vpn-leyenda">
+        <p>P / Inversión₀ = Inversión inicial &nbsp;|&nbsp; FNE = Flujos netos de efectivo</p>
+        <p>TO = Tasa de oportunidad del inversionista &nbsp;|&nbsp; TIR = Tasa Interna de Retorno</p>
+      </div>
+    </div>
+
   </div>
 
 </main>
@@ -897,11 +965,20 @@ function renderTasasTabla(ea){
 
 function renderTasasFormulas(){
   const body=document.getElementById('tasasFormulas');
-  if(tModoTasa==='Vencida'){
-    body.innerHTML='<p>📌 ip = iN / K</p><p>📌 iN = ip × K</p><p>📌 ie = (1 + ip)ᴷ − 1</p><p>📌 ip = (1 + ie)^(1/K) − 1</p><p style="margin-top:10px;color:rgba(255,255,255,.4);font-size:11px">ip = Tasa periódica  |  iN = Nominal  |  ie = Efectiva anual  |  K = Frecuencia</p>';
-  } else {
-    body.innerHTML='<p>📌 ip = iN / K</p><p>📌 iN = ip × K</p><p>📌 ie = (1 − ip)⁻ᴷ − 1</p><p>📌 ip = [(1 + ie)^(−1/K) − 1] × −1</p><p style="margin-top:10px;color:rgba(255,255,255,.4);font-size:11px">ip = Tasa periódica  |  iN = Nominal  |  ie = Efectiva anual  |  K = Frecuencia</p>';
-  }
+  const f=tModoTasa==='Vencida'?[
+    ['ip = iN / K','Tasa periódica desde nominal'],
+    ['iN = ip × K','Tasa nominal desde periódica'],
+    ['ie = (1 + ip)ᴷ − 1','Tasa efectiva anual desde periódica'],
+    ['ip = (1 + ie)^(1/K) − 1','Tasa periódica desde efectiva'],
+  ]:[
+    ['ip = iN / K','Tasa periódica desde nominal'],
+    ['iN = ip × K','Tasa nominal desde periódica'],
+    ['ie = (1 − ip)⁻ᴷ − 1','Tasa efectiva anual desde periódica'],
+    ['ip = [(1 + ie)^(−1/K) − 1] × −1','Tasa periódica desde efectiva'],
+  ];
+  body.innerHTML=`<h4>Fórmulas — Tasas ${tModoTasa}s</h4>`+
+    f.map(([eq,desc])=>`<div class="vpn-formula-box"><div class="vpn-formula-title">${desc}</div><div class="vpn-formula-eq">${eq}</div></div>`).join('')+
+    `<div class="vpn-leyenda"><p>ip = Tasa periódica &nbsp;|&nbsp; iN = Tasa nominal &nbsp;|&nbsp; ie = Tasa efectiva anual &nbsp;|&nbsp; K = Frecuencia de capitalización</p></div>`;
 }
 
 // ══════════════════════════════════════════════════════
@@ -909,19 +986,39 @@ function renderTasasFormulas(){
 // ══════════════════════════════════════════════════════
 let varAnual='A', tipoAnual='Vencida', usaVA=true, sistemAnual='Frances';
 const formulasAnual={
-  A_VA:'A = VA × [i / (1 − (1+i)⁻ⁿ)]',
-  A_VF:'A = VF × [i / ((1+i)ⁿ − 1)]',
-  VA:'VA = A × [(1 − (1+i)⁻ⁿ) / i]',
-  VF:'VF = A × [((1+i)ⁿ − 1) / i]',
-  i:'i se calcula por iteración numérica (bisección)',
-  n_VA:'n = −Ln(1 − VA×i/A) / Ln(1+i)',
-  n_VF:'n = Ln(1 + VF×i/A) / Ln(1+i)',
+  // Vencidas
+  VA_V:      'VA = A × [(1 − (1+i)⁻ⁿ) / i]',
+  VF_V:      'VF = A × [((1+i)ⁿ − 1) / i]',
+  A_VA_V:    'A = VA × [i / (1 − (1+i)⁻ⁿ)]',
+  A_VF_V:    'A = VF × [i / ((1+i)ⁿ − 1)]',
+  i_V:       'i se calcula por iteración numérica (bisección)',
+  n_VA_V:    'n = −Ln(1 − VA×i/A) / Ln(1+i)',
+  n_VF_V:    'n = Ln(1 + VF×i/A) / Ln(1+i)',
+  // Anticipadas
+  VA_A:      'VA = A × [(1 − (1+i)⁻ⁿ) / i] × (1+i)',
+  VF_A:      'VF = A × [((1+i)ⁿ − 1) / i] × (1+i)',
+  A_VA_A:    'A = VA × [i / (1 − (1+i)⁻ⁿ)] × 1/(1+i)',
+  A_VF_A:    'A = VF × [i / ((1+i)ⁿ − 1)] × 1/(1+i)',
+  i_A:       'i se calcula por iteración numérica (bisección)',
+  n_VA_A:    'n = −Ln(1 − VA×i/(A×(1+i))) / Ln(1+i)',
+  n_VF_A:    'n = Ln(1 + VF×i/(A×(1+i))) / Ln(1+i)',
 };
+
+function getFormulaAnual(){
+  const suf=tipoAnual==='Vencida'?'_V':'_A';
+  if(varAnual==='VA') return formulasAnual['VA'+suf];
+  if(varAnual==='VF') return formulasAnual['VF'+suf];
+  if(varAnual==='A')  return usaVA?formulasAnual['A_VA'+suf]:formulasAnual['A_VF'+suf];
+  if(varAnual==='i')  return formulasAnual['i'+suf];
+  if(varAnual==='n')  return usaVA?formulasAnual['n_VA'+suf]:formulasAnual['n_VF'+suf];
+  return '';
+}
 
 function setTipoAnual(t,btn){
   tipoAnual=t;
   document.querySelectorAll('#calc-anualidades .denom-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
+  renderAnualCampos();
   calcAnual();
 }
 function setVarAnual(v,btn){
@@ -964,11 +1061,7 @@ function renderAnualCampos(){
     calcAnual();
   }));
 
-  // Fórmula
-  let fKey=varAnual;
-  if(varAnual==='A') fKey=usaVA?'A_VA':'A_VF';
-  if(varAnual==='n') fKey=usaVA?'n_VA':'n_VF';
-  document.getElementById('anualFormulaText').textContent=formulasAnual[fKey]||'';
+  document.getElementById('anualFormulaText').textContent=getFormulaAnual();
 }
 
 function toggleUsaVA(el){
