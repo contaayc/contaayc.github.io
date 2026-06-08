@@ -406,21 +406,67 @@
 
     /* ── Responsive ── */
     @media (max-width: 768px) {
-      :root { --sidebar: 0px; }
-      .sidebar { transform: translateX(-260px); width: 260px; transition: transform .3s; }
+      body { flex-direction: column; }
+      .sidebar {
+        position: fixed; left: 0; top: 0; bottom: 0;
+        transform: translateX(-280px);
+        width: 280px !important;
+        transition: transform .3s cubic-bezier(.4,0,.2,1);
+        z-index: 200;
+      }
       .sidebar.open { transform: translateX(0); }
-      .main { margin-left: 0; }
-      .content { padding: 20px; }
-      .header { padding: 16px 20px; }
-      .campos-grid { grid-template-columns: 1fr; }
-      .hamburger { display: flex; }
+      .main { margin-left: 0 !important; width: 100%; }
+      .header { padding: 14px 16px; }
+      .header-left h1 { font-size: 17px; }
+      .header-left p { font-size: 11px; }
+      .content { padding: 16px 16px 80px; }
+      .campos-grid { grid-template-columns: 1fr !important; }
+      .var-selector { gap: 6px; }
+      .var-btn { padding: 8px 14px; font-size: 12px; }
+      .denom-row { flex-wrap: wrap; }
+      .denom-btn { font-size: 12px; padding: 9px; }
+      .freq-grid { gap: 6px; }
+      .freq-btn { font-size: 11px; padding: 7px 10px; }
+      .sistema-row { flex-wrap: wrap; }
+      .hamburger { display: flex !important; }
+      .ea-value { font-size: 22px; }
+      .resultado-valor { font-size: 15px; }
+      .resultado-row.highlight .resultado-valor { font-size: 17px; }
+      /* Bottom nav para móvil */
+      .bottom-nav {
+        display: flex !important;
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: var(--azul);
+        border-top: 1px solid rgba(201,168,76,.2);
+        z-index: 150; padding: 0;
+      }
+      .bottom-nav-item {
+        flex: 1; display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        padding: 10px 4px 14px;
+        cursor: pointer; border: none; background: none;
+        color: rgba(255,255,255,.5);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 10px; font-weight: 600;
+        transition: color .2s;
+        gap: 3px;
+      }
+      .bottom-nav-item.active { color: var(--dorado); }
+      .bottom-nav-item span:first-child { font-size: 18px; }
     }
+    @media (min-width: 769px) {
+      .bottom-nav { display: none !important; }
+      .hamburger { display: none !important; }
+    }
+    .bottom-nav { display: none; }
     .hamburger {
       display: none; flex-direction: column; gap: 5px;
-      background: none; border: none; cursor: pointer; padding: 4px;
+      background: none; border: none; cursor: pointer; padding: 6px;
+      border-radius: 8px; transition: background .2s;
     }
-    .hamburger span { width: 22px; height: 2px; background: var(--azul); border-radius: 2px; }
-    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 90; }
+    .hamburger:hover { background: var(--gris); }
+    .hamburger span { width: 22px; height: 2px; background: var(--azul); border-radius: 2px; display: block; }
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 190; }
     .overlay.show { display: block; }
   </style>
 </head>
@@ -475,6 +521,25 @@
 </aside>
 
 <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- Bottom nav solo en móvil -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="bottom-nav-item active" onclick="showCalc('simple')" id="bn-simple">
+    <span>📐</span><span>Int. Simple</span>
+  </button>
+  <button class="bottom-nav-item" onclick="showCalc('compuesto')" id="bn-compuesto">
+    <span>📈</span><span>Compuesto</span>
+  </button>
+  <button class="bottom-nav-item" onclick="showCalc('tasas')" id="bn-tasas">
+    <span>🔄</span><span>Tasas</span>
+  </button>
+  <button class="bottom-nav-item" onclick="showCalc('anualidades')" id="bn-anualidades">
+    <span>💰</span><span>Anualidades</span>
+  </button>
+  <button class="bottom-nav-item" onclick="showCalc('vpntir')" id="bn-vpntir">
+    <span>📊</span><span>VPN/TIR</span>
+  </button>
+</nav>
 
 <!-- ── MAIN ── -->
 <main class="main">
@@ -604,7 +669,51 @@
     <div id="anualTablaSection" style="display:none;margin-top:16px">
       <span class="section-label">Sistema de amortización</span>
       <div class="sistema-row" id="sistemaRow"></div>
+
+      <!-- Período de gracia -->
+      <span class="section-label" style="margin-top:16px">Período de gracia</span>
+      <div class="campos-grid" style="grid-template-columns:1fr 1fr;margin-bottom:8px">
+        <div class="campo">
+          <label>Períodos de gracia</label>
+          <div class="campo-input-wrap">
+            <input type="number" id="graciaNum" placeholder="0 = sin gracia" oninput="recalcTabla()" class="with-suffix">
+            <div class="campo-suffix">per.</div>
+          </div>
+        </div>
+        <div class="campo">
+          <label>Tipo de gracia</label>
+          <div style="display:flex;gap:8px;margin-top:2px">
+            <button class="freq-btn active" id="btnGraciaMuerta" onclick="setTipoGracia('Muerta',this)" style="flex:1">💀 Muerta</button>
+            <button class="freq-btn" id="btnGraciaCapital" onclick="setTipoGracia('Capital',this)" style="flex:1">🏦 Capital</button>
+          </div>
+        </div>
+      </div>
+      <div id="graciaInfo" style="font-size:12px;color:var(--sub);font-style:italic;margin-bottom:16px"></div>
+
+      <!-- Abonos a capital -->
+      <span class="section-label">Abonos a capital</span>
+      <div class="campos-grid" style="grid-template-columns:auto 1fr auto;margin-bottom:8px;align-items:end">
+        <div class="campo">
+          <label>Período</label>
+          <input type="number" id="abonoPer" placeholder="Ej: 6" style="width:90px;border:1.5px solid var(--borde);border-radius:10px;padding:12px;font-size:14px;outline:none;font-family:'DM Sans',sans-serif">
+        </div>
+        <div class="campo">
+          <label>Monto del abono</label>
+          <div class="campo-input-wrap">
+            <div class="campo-prefix">$</div>
+            <input type="text" id="abonoMonto" placeholder="Ej: 1.000.000" oninput="this.value=fmtInput(this.value)">
+          </div>
+        </div>
+        <button onclick="agregarAbono()" style="padding:12px 18px;background:var(--azul);color:var(--dorado);border:none;border-radius:10px;font-size:20px;font-weight:700;cursor:pointer;height:46px;align-self:end">+</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <button class="freq-btn active" id="btnReducirPlazo" onclick="setReducir(true,this)">⏱ Reducir Plazo</button>
+        <button class="freq-btn" id="btnReducirCuota" onclick="setReducir(false,this)">💵 Reducir Cuota</button>
+      </div>
+      <div id="abonosList" style="margin-bottom:12px"></div>
+
       <div class="amort-table-wrap"><table id="amortTable"><thead></thead><tbody></tbody></table></div>
+      <div id="amortTotales" style="margin-top:12px"></div>
     </div>
   </div>
 
@@ -712,6 +821,10 @@ function showCalc(id){
   document.getElementById('calc-'+id).style.display='block';
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   event.currentTarget.classList.add('active');
+  // Sincronizar bottom nav
+  document.querySelectorAll('.bottom-nav-item').forEach(b=>b.classList.remove('active'));
+  const bnItem=document.getElementById('bn-'+id);
+  if(bnItem) bnItem.classList.add('active');
   const t=calcTitles[id];
   document.getElementById('headerTitle').textContent=t[0];
   document.getElementById('headerSub').textContent=t[1];
@@ -1145,46 +1258,188 @@ function calcAnual(){
 }
 
 let tablaVisible=false;
+let tipoGracia='Muerta';
+let reducirPlazo=true;
+let abonos={};
+let _tablaA=0, _tablaI=0, _tablaN=0, _tablaBase=0, _tablaEsAmort=true;
+
+function setTipoGracia(tipo,btn){
+  tipoGracia=tipo;
+  document.getElementById('btnGraciaMuerta').classList.toggle('active', tipo==='Muerta');
+  document.getElementById('btnGraciaCapital').classList.toggle('active', tipo==='Capital');
+  const info=document.getElementById('graciaInfo');
+  info.textContent=tipo==='Muerta'?'No paga nada. Los intereses se capitalizan al saldo.':'Solo paga intereses. El capital no se amortiza.';
+  recalcTabla();
+}
+
+function setReducir(val,btn){
+  reducirPlazo=val;
+  document.getElementById('btnReducirPlazo').classList.toggle('active', val);
+  document.getElementById('btnReducirCuota').classList.toggle('active', !val);
+  recalcTabla();
+}
+
+function agregarAbono(){
+  const per=parseInt(document.getElementById('abonoPer').value)||0;
+  const monto=parseI(document.getElementById('abonoMonto').value||'');
+  if(per>0&&monto>0){
+    abonos[per]=monto;
+    document.getElementById('abonoPer').value='';
+    document.getElementById('abonoMonto').value='';
+    renderAbonosList();
+    recalcTabla();
+  }
+}
+
+function quitarAbono(per){
+  delete abonos[per];
+  renderAbonosList();
+  recalcTabla();
+}
+
+function renderAbonosList(){
+  const div=document.getElementById('abonosList');
+  const keys=Object.keys(abonos);
+  if(!keys.length){ div.innerHTML=''; return; }
+  div.innerHTML=keys.map(p=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;background:#E3F2FD;border-radius:8px;padding:8px 12px;margin-bottom:4px">
+      <span style="font-size:13px;color:#0A1F3D;font-weight:600">Período ${p}: $ ${fmt(abonos[p])}</span>
+      <button onclick="quitarAbono(${p})" style="background:none;border:none;color:#C62828;font-size:16px;cursor:pointer;font-weight:700">✕</button>
+    </div>`).join('');
+}
+
+function recalcTabla(){
+  if(_tablaA>0&&_tablaI>0&&_tablaN>0){
+    if(_tablaEsAmort) renderTablaAmort(_tablaA,_tablaI,_tablaN,_tablaBase,sistemAnual);
+    else renderTablaCapitalizacion(_tablaA,_tablaI,_tablaN);
+  }
+}
+
 function toggleTablaAnual(){
   tablaVisible=!tablaVisible;
   document.getElementById('anualTablaSection').style.display=tablaVisible?'block':'none';
 }
 
 function renderSistemas(A,esAmort,i,n,base){
-  if(!esAmort){ renderTablaCapitalizacion(A,i,n); return; }
+  _tablaA=A; _tablaI=i; _tablaN=n; _tablaBase=base; _tablaEsAmort=esAmort;
+  abonos={};
+  renderAbonosList();
+  if(!esAmort){
+    document.getElementById('sistemaRow').innerHTML='';
+    document.getElementById('graciaNum').value='';
+    document.getElementById('graciaInfo').textContent='';
+    renderTablaCapitalizacion(A,i,n);
+    return;
+  }
   const sr=document.getElementById('sistemaRow');
-  sr.innerHTML=['Francés','Alemán','Americano'].map(s=>`<button class="sistema-btn${s===sistemAnual?' active':''}" onclick="setSistema('${s}',${A},${i},${n},${base})">${s}</button>`).join('');
+  sr.innerHTML=['Francés','Alemán','Americano'].map(s=>`<button class="sistema-btn${s===sistemAnual?' active':''}" onclick="setSistemaBtn('${s}',this)">${s}</button>`).join('');
+  document.getElementById('graciaNum').value='';
+  document.getElementById('graciaInfo').textContent='';
   renderTablaAmort(A,i,n,base,sistemAnual);
 }
 
-function setSistema(s,A,i,n,base){
+function setSistemaBtn(s,btn){
   sistemAnual=s;
   document.querySelectorAll('.sistema-btn').forEach(b=>b.classList.remove('active'));
-  event.currentTarget.classList.add('active');
-  renderTablaAmort(A,i,n,base,s);
+  btn.classList.add('active');
+  renderTablaAmort(_tablaA,_tablaI,_tablaN,_tablaBase,s);
+}
+
+function cuotaFrancesCalc(saldo,ip,n){
+  if(ip===0||n===0) return saldo/(n||1);
+  return saldo*(ip/(1-Math.pow(1+ip,-n)));
 }
 
 function renderTablaAmort(A,i,n,base,sistema){
   const ip=i/100;
-  let rows=[], saldo=base;
-  const cuotaN=cuotaFrances(base,i,n);
-  const capFijo=base/n;
+  const graciaNum=parseInt(document.getElementById('graciaNum')?.value)||0;
+  const periodosAmort=n-graciaNum;
 
-  for(let k=1;k<=n&&saldo>0.01;k++){
-    const int=saldo*ip;
-    let cuota,capital;
-    if(sistema==='Francés'){ cuota=Math.min(cuotaN,saldo+int); capital=cuota-int; }
-    else if(sistema==='Alemán'){ capital=Math.min(capFijo,saldo); cuota=capital+int; }
-    else { capital=k===n?saldo:0; cuota=k===n?saldo+int:int; }
-    saldo=Math.max(0,saldo-capital);
-    rows.push({k,cuota,int,capital,saldo});
+  // Calcular saldo post gracia
+  let saldoPostGracia=base;
+  if(graciaNum>0&&tipoGracia==='Muerta') saldoPostGracia=base*Math.pow(1+ip,graciaNum);
+
+  // Cuota original sobre saldo post gracia
+  let cuotaOriginal=cuotaFrancesCalc(saldoPostGracia,ip,periodosAmort>0?periodosAmort:1);
+  let capitalFijo=saldoPostGracia/(periodosAmort>0?periodosAmort:1);
+  let cuota=cuotaOriginal;
+
+  const rows=[];
+  let saldo=base;
+
+  for(let k=1;k<=n+50&&saldo>0.01;k++){
+    const intPer=saldo*ip;
+    let capital=0, cuotaReal=0, esGracia=false;
+
+    if(k<=graciaNum){
+      esGracia=true;
+      if(tipoGracia==='Muerta'){ cuotaReal=0; capital=0; saldo+=intPer; }
+      else { cuotaReal=intPer; capital=0; }
+      rows.push({k,cuota:cuotaReal,int:tipoGracia==='Muerta'?0:intPer,capital:0,abono:0,saldo,esGracia:true});
+      continue;
+    }
+
+    // Reducir cuota tras abono anterior
+    if(!reducirPlazo&&abonos[k-1]){
+      const perRest=n-k+1;
+      if(sistema==='Francés') cuota=cuotaFrancesCalc(saldo,ip,perRest>0?perRest:1);
+      else if(sistema==='Alemán') capitalFijo=saldo/(perRest>0?perRest:1);
+    }
+
+    const abono=abonos[k]||0;
+
+    if(sistema==='Francés'){
+      capital=cuota-intPer;
+      if(capital>=saldo||saldo-capital<=0.01){ capital=saldo; cuotaReal=capital+intPer; saldo=0; rows.push({k,cuota:cuotaReal,int:intPer,capital,abono:0,saldo:0}); break; }
+      cuotaReal=cuota;
+    } else if(sistema==='Alemán'){
+      capital=Math.min(capitalFijo,saldo);
+      cuotaReal=capital+intPer;
+    } else {
+      capital=k===n?saldo:0;
+      cuotaReal=k===n?saldo+intPer:intPer;
+    }
+
+    saldo=Math.max(0,saldo-capital-abono);
+
+    // Reducir plazo: recalcular cuota con saldo y períodos restantes
+    if(reducirPlazo&&abono>0){
+      const perRest=n-k;
+      if(perRest>0){
+        if(sistema==='Francés') cuota=cuotaFrancesCalc(saldo,ip,perRest);
+        else if(sistema==='Alemán') capitalFijo=saldo/perRest;
+      }
+    }
+
+    rows.push({k,cuota:cuotaReal,int:intPer,capital,abono,saldo});
     if(saldo<=0.01)break;
   }
 
+  const tieneAbonos=Object.keys(abonos).length>0;
   const thead=document.querySelector('#amortTable thead');
   const tbody=document.querySelector('#amortTable tbody');
-  thead.innerHTML='<tr><th>#</th><th>Cuota</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr>';
-  tbody.innerHTML=rows.map(r=>`<tr><td>${r.k}</td><td>$ ${fmt(r.cuota)}</td><td>$ ${fmt(r.int)}</td><td>$ ${fmt(r.capital)}</td><td>$ ${fmt(r.saldo)}</td></tr>`).join('');
+  thead.innerHTML=`<tr><th>#</th><th>Cuota</th><th>Interés</th><th>Capital</th>${tieneAbonos?'<th>Abono</th>':''}<th>Saldo</th></tr>`;
+  tbody.innerHTML=rows.map(r=>`<tr style="${r.esGracia?'background:#FFF8E6':''}">
+    <td>${r.k}</td>
+    <td>${r.esGracia&&r.cuota===0?'<span style="color:#E67E22;font-style:italic">Gracia</span>':'$ '+fmt(r.cuota)}</td>
+    <td>$ ${fmt(r.int)}</td>
+    <td>$ ${fmt(r.capital)}</td>
+    ${tieneAbonos?`<td style="color:#1565C0;font-weight:${r.abono?'700':'400'}">${r.abono?'$ '+fmt(r.abono):'—'}</td>`:''}
+    <td>$ ${fmt(r.saldo)}</td>
+  </tr>`).join('');
+
+  // Totales
+  const totalCuotas=rows.reduce((s,r)=>s+(r.cuota||0),0);
+  const totalIntereses=rows.reduce((s,r)=>s+(r.int||0),0);
+  const totalCapital=rows.reduce((s,r)=>s+(r.capital||0),0);
+  document.getElementById('amortTotales').innerHTML=`
+    <div class="resultados">
+      <div class="resultado-row"><span class="resultado-label">Períodos efectivos</span><span class="resultado-valor">${rows.length}</span></div>
+      <div class="resultado-row"><span class="resultado-label">Total cuotas pagadas</span><span class="resultado-valor">$ ${fmt(totalCuotas)}</span></div>
+      <div class="resultado-row"><span class="resultado-label">Total capital</span><span class="resultado-valor">$ ${fmt(totalCapital)}</span></div>
+      <div class="resultado-row highlight"><span class="resultado-label">Total intereses</span><span class="resultado-valor">$ ${fmt(totalIntereses)}</span></div>
+    </div>`;
+
   document.getElementById('anualTablaSection').style.display='block';
   tablaVisible=true;
 }
