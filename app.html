@@ -231,6 +231,7 @@
     .freq-btn:hover:not(:disabled) { border-color: var(--naranja); color: var(--naranja); }
     .freq-btn.active { background: var(--naranja); border-color: var(--naranja); color: white; }
     .freq-btn:disabled { opacity: .3; cursor: not-allowed; }
+    .reducir-btn.active { background: var(--azul) !important; border-color: var(--azul) !important; color: var(--dorado) !important; }
 
     /* ── EA Card ── */
     .ea-card {
@@ -432,6 +433,11 @@
       .ea-value { font-size: 22px; }
       .resultado-valor { font-size: 15px; }
       .resultado-row.highlight .resultado-valor { font-size: 17px; }
+      /* Tabla amortización más compacta en móvil */
+      thead th { padding: 8px 6px; font-size: 9px; letter-spacing: .4px; }
+      tbody td { padding: 7px 6px; font-size: 10px; }
+      tbody td:first-child { font-size: 10px; }
+      .amort-table-wrap { border-radius: 10px; }
       /* Bottom nav para móvil */
       .bottom-nav {
         display: flex !important;
@@ -676,11 +682,11 @@
         <div class="campo">
           <label>Períodos de gracia</label>
           <div class="campo-input-wrap">
-            <input type="number" id="graciaNum" placeholder="0 = sin gracia" oninput="recalcTabla()" class="with-suffix">
+            <input type="number" id="graciaNum" placeholder="0 = sin gracia" oninput="onGraciaChange()" class="with-suffix">
             <div class="campo-suffix">per.</div>
           </div>
         </div>
-        <div class="campo">
+        <div class="campo" id="tipoGraciaCol">
           <label>Tipo de gracia</label>
           <div style="display:flex;gap:8px;margin-top:2px">
             <button class="freq-btn active" id="btnGraciaMuerta" onclick="setTipoGracia('Muerta',this)" style="flex:1">💀 Muerta</button>
@@ -707,8 +713,8 @@
         <button onclick="agregarAbono()" style="padding:12px 18px;background:var(--azul);color:var(--dorado);border:none;border-radius:10px;font-size:20px;font-weight:700;cursor:pointer;height:46px;align-self:end">+</button>
       </div>
       <div style="display:flex;gap:8px;margin-bottom:12px">
-        <button class="freq-btn active" id="btnReducirPlazo" onclick="setReducir(true,this)">⏱ Reducir Plazo</button>
-        <button class="freq-btn" id="btnReducirCuota" onclick="setReducir(false,this)">💵 Reducir Cuota</button>
+        <button class="freq-btn reducir-btn active" id="btnReducirPlazo" onclick="setReducir(true,this)">⏱ Reducir Plazo</button>
+        <button class="freq-btn reducir-btn" id="btnReducirCuota" onclick="setReducir(false,this)">💵 Reducir Cuota</button>
       </div>
       <div id="abonosList" style="margin-bottom:12px"></div>
 
@@ -1263,6 +1269,13 @@ let reducirPlazo=true;
 let abonos={};
 let _tablaA=0, _tablaI=0, _tablaN=0, _tablaBase=0, _tablaEsAmort=true;
 
+function onGraciaChange(){
+  const graciaNum=parseInt(document.getElementById('graciaNum').value)||0;
+  const col=document.getElementById('tipoGraciaCol');
+  if(col) col.style.visibility=graciaNum>0?'visible':'hidden';
+  recalcTabla();
+}
+
 function setTipoGracia(tipo,btn){
   tipoGracia=tipo;
   document.getElementById('btnGraciaMuerta').classList.toggle('active', tipo==='Muerta');
@@ -1322,6 +1335,7 @@ function toggleTablaAnual(){
 
 function renderSistemas(A,esAmort,i,n,base){
   _tablaA=A; _tablaI=i; _tablaN=n; _tablaBase=base; _tablaEsAmort=esAmort;
+  sistemAnual='Frances';
   abonos={};
   renderAbonosList();
   if(!esAmort){
@@ -1335,6 +1349,8 @@ function renderSistemas(A,esAmort,i,n,base){
   sr.innerHTML=['Francés','Alemán','Americano'].map(s=>`<button class="sistema-btn${s===sistemAnual?' active':''}" onclick="setSistemaBtn('${s}',this)">${s}</button>`).join('');
   document.getElementById('graciaNum').value='';
   document.getElementById('graciaInfo').textContent='';
+  const col=document.getElementById('tipoGraciaCol');
+  if(col) col.style.visibility='hidden';
   renderTablaAmort(A,i,n,base,sistemAnual);
 }
 
@@ -1366,8 +1382,10 @@ function renderTablaAmort(A,i,n,base,sistema){
 
   const rows=[];
   let saldo=base;
+  let cuotaActual=cuotaOriginal;
+  let capitalFijoActual=capitalFijo;
 
-  for(let k=1;k<=n+50&&saldo>0.01;k++){
+  for(let k=1;k<=n+500&&saldo>0.01;k++){
     const intPer=saldo*ip;
     let capital=0, cuotaReal=0, esGracia=false;
 
@@ -1379,35 +1397,43 @@ function renderTablaAmort(A,i,n,base,sistema){
       continue;
     }
 
-    // Reducir cuota tras abono anterior
+    // Reducir cuota tras abono anterior (modo reducir cuota)
     if(!reducirPlazo&&abonos[k-1]){
-      const perRest=n-k+1;
-      if(sistema==='Francés') cuota=cuotaFrancesCalc(saldo,ip,perRest>0?perRest:1);
-      else if(sistema==='Alemán') capitalFijo=saldo/(perRest>0?perRest:1);
+      if(sistema==='Francés'){
+        // Períodos restantes originales
+        const perRest=n-(k-1);
+        cuotaActual=perRest>0?cuotaFrancesCalc(saldo,ip,perRest):cuotaFrancesCalc(saldo,ip,1);
+      } else if(sistema==='Alemán'){
+        const perRest=n-(k-1);
+        capitalFijoActual=perRest>0?saldo/perRest:saldo;
+      }
     }
 
     const abono=abonos[k]||0;
 
     if(sistema==='Francés'){
-      capital=cuota-intPer;
+      capital=cuotaActual-intPer;
+      if(capital<0) capital=0;
       if(capital>=saldo||saldo-capital<=0.01){ capital=saldo; cuotaReal=capital+intPer; saldo=0; rows.push({k,cuota:cuotaReal,int:intPer,capital,abono:0,saldo:0}); break; }
-      cuotaReal=cuota;
+      cuotaReal=cuotaActual;
     } else if(sistema==='Alemán'){
-      capital=Math.min(capitalFijo,saldo);
+      capital=Math.min(capitalFijoActual,saldo);
       cuotaReal=capital+intPer;
     } else {
-      capital=k===n?saldo:0;
-      cuotaReal=k===n?saldo+intPer:intPer;
+      capital=saldo<=cuotaActual?saldo:0;
+      cuotaReal=saldo<=cuotaActual?saldo+intPer:intPer;
     }
 
+    const saldoAntes=saldo;
     saldo=Math.max(0,saldo-capital-abono);
 
-    // Reducir plazo: recalcular cuota con saldo y períodos restantes
-    if(reducirPlazo&&abono>0){
-      const perRest=n-k;
-      if(perRest>0){
-        if(sistema==='Francés') cuota=cuotaFrancesCalc(saldo,ip,perRest);
-        else if(sistema==='Alemán') capitalFijo=saldo/perRest;
+    // Reducir plazo: recalcular cuota manteniendo el mismo valor con el saldo restante
+    // En este modo la cuota NO cambia, el plazo se acorta solo porque el saldo baja más rápido
+    if(reducirPlazo&&abono>0&&saldo>0.01){
+      // Mantener la misma cuota — el plazo se reduce automáticamente al correr el loop
+      // Solo recalcular si la cuota actual no alcanza a cubrir intereses
+      if(sistema==='Francés'&&cuotaActual<=saldo*ip){
+        cuotaActual=cuotaFrancesCalc(saldo,ip,1);
       }
     }
 
