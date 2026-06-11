@@ -10,6 +10,8 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   <style>
     /* ── Variables ── */
     :root {
@@ -232,6 +234,7 @@
     .freq-btn.active { background: var(--naranja); border-color: var(--naranja); color: white; }
     .freq-btn:disabled { opacity: .3; cursor: not-allowed; }
     .reducir-btn.active { background: var(--azul) !important; border-color: var(--azul) !important; color: var(--dorado) !important; }
+    .gracia-btn.active { background: var(--azul) !important; border-color: var(--azul) !important; color: var(--dorado) !important; }
 
     /* ── EA Card ── */
     .ea-card {
@@ -689,12 +692,12 @@
         <div class="campo" id="tipoGraciaCol">
           <label>Tipo de gracia</label>
           <div style="display:flex;gap:8px;margin-top:2px">
-            <button class="freq-btn active" id="btnGraciaMuerta" onclick="setTipoGracia('Muerta',this)" style="flex:1">💀 Muerta</button>
-            <button class="freq-btn" id="btnGraciaCapital" onclick="setTipoGracia('Capital',this)" style="flex:1">🏦 Capital</button>
+            <button class="freq-btn gracia-btn active" id="btnGraciaMuerta" onclick="setTipoGracia('Muerta',this)" style="flex:1">💀 Muerta</button>
+            <button class="freq-btn gracia-btn" id="btnGraciaCapital" onclick="setTipoGracia('Capital',this)" style="flex:1">🏦 Capital</button>
           </div>
         </div>
       </div>
-      <div id="graciaInfo" style="font-size:12px;color:var(--sub);font-style:italic;margin-bottom:16px"></div>
+      <div id="graciaInfo" style="display:none"></div>
 
       <!-- Abonos a capital -->
       <span class="section-label">Abonos a capital</span>
@@ -712,7 +715,7 @@
         </div>
         <button onclick="agregarAbono()" style="padding:12px 18px;background:var(--azul);color:var(--dorado);border:none;border-radius:10px;font-size:20px;font-weight:700;cursor:pointer;height:46px;align-self:end">+</button>
       </div>
-      <div style="display:flex;gap:8px;margin-bottom:12px">
+      <div id="reducirWrap" style="gap:8px;margin-bottom:12px;display:none">
         <button class="freq-btn reducir-btn active" id="btnReducirPlazo" onclick="setReducir(true,this)">⏱ Reducir Plazo</button>
         <button class="freq-btn reducir-btn" id="btnReducirCuota" onclick="setReducir(false,this)">💵 Reducir Cuota</button>
       </div>
@@ -720,6 +723,12 @@
 
       <div class="amort-table-wrap"><table id="amortTable"><thead></thead><tbody></tbody></table></div>
       <div id="amortTotales" style="margin-top:12px"></div>
+      <div id="pdfBtnWrap" style="margin-top:16px;display:none">
+        <button onclick="descargarPDF()" style="width:100%;padding:14px 20px;border-radius:12px;border:none;background:#C62828;color:white;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Descargar Tabla en PDF
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1280,8 +1289,6 @@ function setTipoGracia(tipo,btn){
   tipoGracia=tipo;
   document.getElementById('btnGraciaMuerta').classList.toggle('active', tipo==='Muerta');
   document.getElementById('btnGraciaCapital').classList.toggle('active', tipo==='Capital');
-  const info=document.getElementById('graciaInfo');
-  info.textContent=tipo==='Muerta'?'No paga nada. Los intereses se capitalizan al saldo.':'Solo paga intereses. El capital no se amortiza.';
   recalcTabla();
 }
 
@@ -1300,6 +1307,9 @@ function agregarAbono(){
     document.getElementById('abonoPer').value='';
     document.getElementById('abonoMonto').value='';
     renderAbonosList();
+    // Mostrar botones reducir
+    const rw=document.getElementById('reducirWrap');
+    if(rw) rw.style.display='flex';
     recalcTabla();
   }
 }
@@ -1307,6 +1317,11 @@ function agregarAbono(){
 function quitarAbono(per){
   delete abonos[per];
   renderAbonosList();
+  // Ocultar botones reducir si no quedan abonos
+  if(!Object.keys(abonos).length){
+    const rw=document.getElementById('reducirWrap');
+    if(rw) rw.style.display='none';
+  }
   recalcTabla();
 }
 
@@ -1336,8 +1351,16 @@ function toggleTablaAnual(){
 function renderSistemas(A,esAmort,i,n,base){
   _tablaA=A; _tablaI=i; _tablaN=n; _tablaBase=base; _tablaEsAmort=esAmort;
   sistemAnual='Frances';
+  reducirPlazo=true;
   abonos={};
   renderAbonosList();
+  const rw=document.getElementById('reducirWrap');
+  if(rw){ rw.style.display='none'; }
+  // Reset reducir buttons state
+  const bp=document.getElementById('btnReducirPlazo');
+  const bc=document.getElementById('btnReducirCuota');
+  if(bp){ bp.classList.add('active'); }
+  if(bc){ bc.classList.remove('active'); }
   if(!esAmort){
     document.getElementById('sistemaRow').innerHTML='';
     document.getElementById('graciaNum').value='';
@@ -1468,9 +1491,9 @@ function renderTablaAmort(A,i,n,base,sistema){
 
   document.getElementById('anualTablaSection').style.display='block';
   tablaVisible=true;
-}
-
-function renderTablaCapitalizacion(A,i,n){
+  const pdfWrap=document.getElementById('pdfBtnWrap');
+  if(pdfWrap) pdfWrap.style.display='block';
+}(A,i,n){
   const ip=i/100;
   let saldo=0, rows=[];
   for(let k=1;k<=n;k++){
@@ -1485,6 +1508,126 @@ function renderTablaCapitalizacion(A,i,n){
   tbody.innerHTML=rows.map(r=>`<tr><td>${r.k}</td><td>$ ${fmt(r.dep)}</td><td>$ ${fmt(r.int)}</td><td>$ ${fmt(r.saldo)}</td></tr>`).join('');
   document.getElementById('anualTablaSection').style.display='block';
   tablaVisible=true;
+}
+
+  document.getElementById('anualTablaSection').style.display='block';
+  tablaVisible=true;
+  const pdfWrap2=document.getElementById('pdfBtnWrap');
+  if(pdfWrap2) pdfWrap2.style.display='block';
+}
+
+function descargarPDF(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'portrait', unit:'pt', format:'a4' });
+  const azul=[10,31,61], dorado=[201,168,76], blanco=[255,255,255], gris=[244,246,250];
+
+  // ── Encabezado ──
+  doc.setFillColor(...azul);
+  doc.rect(0,0,595,70,'F');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(18); doc.setTextColor(...dorado);
+  doc.text('ContaAyC Financiero',40,30);
+  doc.setFontSize(11); doc.setTextColor(255,255,255);
+  doc.text('Tabla de Amortización',40,48);
+  const now=new Date();
+  doc.setFontSize(9); doc.setTextColor(200,210,220);
+  doc.text('Generado: '+now.toLocaleDateString('es-CO')+' '+now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}),40,62);
+
+  // ── Info del préstamo ──
+  const sistema=sistemAnual||'Francés';
+  const graciaNum=parseInt(document.getElementById('graciaNum')?.value)||0;
+  const tipoG=tipoGracia||'Muerta';
+  let yInfo=88;
+  doc.setFontSize(9); doc.setTextColor(...azul);
+  const infoItems=[
+    ['Sistema de amortización', sistema],
+    ['Capital (base)', '$ '+fmt(_tablaBase)],
+    ['Tasa por período', fmt4(_tablaI)+' %'],
+    ['Número de períodos', String(_tablaN)],
+  ];
+  if(graciaNum>0) infoItems.push(['Período de gracia', graciaNum+' per. — '+tipoG]);
+  const tieneAbonos=Object.keys(abonos).length>0;
+  if(tieneAbonos){
+    infoItems.push(['Abonos a capital', Object.keys(abonos).map(p=>'Per.'+p+': $'+fmt(abonos[p])).join(' | ')]);
+    infoItems.push(['Modalidad abono', reducirPlazo?'Reducir Plazo':'Reducir Cuota']);
+  }
+  doc.autoTable({
+    startY: yInfo,
+    head:[['Parámetro','Valor']],
+    body: infoItems,
+    theme:'grid',
+    styles:{fontSize:9,cellPadding:5},
+    headStyles:{fillColor:azul,textColor:dorado,fontStyle:'bold'},
+    alternateRowStyles:{fillColor:gris},
+    margin:{left:40,right:40},
+    tableWidth:'wrap',
+    columnStyles:{0:{cellWidth:200},1:{cellWidth:280}},
+  });
+
+  // ── Tabla amortización ──
+  const thead=document.querySelector('#amortTable thead tr');
+  const tbody=document.querySelectorAll('#amortTable tbody tr');
+  if(!thead||!tbody.length){ doc.save('tabla-amortizacion.pdf'); return; }
+
+  const headers=Array.from(thead.querySelectorAll('th')).map(th=>th.textContent.trim());
+  const bodyData=Array.from(tbody).map(tr=>
+    Array.from(tr.querySelectorAll('td')).map(td=>td.textContent.replace(/\s+/g,' ').trim())
+  );
+
+  doc.autoTable({
+    startY: doc.lastAutoTable.finalY+20,
+    head:[headers],
+    body: bodyData,
+    theme:'striped',
+    styles:{fontSize:8,cellPadding:4,font:'helvetica',halign:'right'},
+    headStyles:{fillColor:azul,textColor:dorado,fontStyle:'bold',halign:'center'},
+    columnStyles:{0:{halign:'center',fontStyle:'bold',textColor:dorado,fillColor:azul}},
+    alternateRowStyles:{fillColor:gris},
+    rowPageBreak:'auto',
+    margin:{left:40,right:40},
+    didParseCell:function(data){
+      if(data.row.raw && data.row.raw[0]==='#') return;
+      // Filas de gracia en amarillo claro
+      const row=data.row.cells[data.column.index];
+      if(data.section==='body'){
+        const tr=tbody[data.row.index];
+        if(tr&&tr.style.background&&tr.style.background.includes('FFF8E6')){
+          data.cell.styles.fillColor=[255,248,230];
+        }
+      }
+    }
+  });
+
+  // ── Resumen / Totales ──
+  const totalesEl=document.getElementById('amortTotales');
+  if(totalesEl){
+    const labels=totalesEl.querySelectorAll('.resultado-label');
+    const valores=totalesEl.querySelectorAll('.resultado-valor');
+    const resData=Array.from(labels).map((l,i)=>[l.textContent.trim(), valores[i]?.textContent.trim()||'']);
+    doc.autoTable({
+      startY: doc.lastAutoTable.finalY+14,
+      head:[['Resumen','']],
+      body: resData,
+      theme:'grid',
+      styles:{fontSize:9,cellPadding:5},
+      headStyles:{fillColor:azul,textColor:dorado,fontStyle:'bold'},
+      columnStyles:{1:{halign:'right',fontStyle:'bold',textColor:[10,31,61]}},
+      margin:{left:40,right:40},
+      tableWidth:'wrap',
+      columnStyles:{0:{cellWidth:240},1:{cellWidth:240,halign:'right',fontStyle:'bold'}},
+    });
+  }
+
+  // ── Pie de página ──
+  const pageCount=doc.internal.getNumberOfPages();
+  for(let p=1;p<=pageCount;p++){
+    doc.setPage(p);
+    doc.setFontSize(8); doc.setTextColor(150,160,170);
+    doc.text('ContaAyC Financiero — Tabla de Amortización',40,doc.internal.pageSize.height-20);
+    doc.text('Pág. '+p+' de '+pageCount, 555, doc.internal.pageSize.height-20,{align:'right'});
+  }
+
+  doc.save('tabla-amortizacion-'+sistema.toLowerCase()+'.pdf');
 }
 
 // ══════════════════════════════════════════════════════
