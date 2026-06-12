@@ -1493,7 +1493,9 @@ function renderTablaAmort(A,i,n,base,sistema){
   tablaVisible=true;
   const pdfWrap=document.getElementById('pdfBtnWrap');
   if(pdfWrap) pdfWrap.style.display='block';
-}(A,i,n){
+}
+
+function renderTablaCapitalizacion(A,i,n){
   const ip=i/100;
   let saldo=0, rows=[];
   for(let k=1;k<=n;k++){
@@ -1508,10 +1510,6 @@ function renderTablaAmort(A,i,n,base,sistema){
   tbody.innerHTML=rows.map(r=>`<tr><td>${r.k}</td><td>$ ${fmt(r.dep)}</td><td>$ ${fmt(r.int)}</td><td>$ ${fmt(r.saldo)}</td></tr>`).join('');
   document.getElementById('anualTablaSection').style.display='block';
   tablaVisible=true;
-}
-
-  document.getElementById('anualTablaSection').style.display='block';
-  tablaVisible=true;
   const pdfWrap2=document.getElementById('pdfBtnWrap');
   if(pdfWrap2) pdfWrap2.style.display='block';
 }
@@ -1519,7 +1517,7 @@ function renderTablaAmort(A,i,n,base,sistema){
 function descargarPDF(){
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation:'portrait', unit:'pt', format:'a4' });
-  const azul=[10,31,61], dorado=[201,168,76], blanco=[255,255,255], gris=[244,246,250];
+  const azul=[10,31,61], dorado=[201,168,76], gris=[244,246,250];
 
   // ── Encabezado ──
   doc.setFillColor(...azul);
@@ -1537,7 +1535,6 @@ function descargarPDF(){
   const sistema=sistemAnual||'Francés';
   const graciaNum=parseInt(document.getElementById('graciaNum')?.value)||0;
   const tipoG=tipoGracia||'Muerta';
-  let yInfo=88;
   doc.setFontSize(9); doc.setTextColor(...azul);
   const infoItems=[
     ['Sistema de amortización', sistema],
@@ -1611,10 +1608,9 @@ function descargarPDF(){
       theme:'grid',
       styles:{fontSize:9,cellPadding:5},
       headStyles:{fillColor:azul,textColor:dorado,fontStyle:'bold'},
-      columnStyles:{1:{halign:'right',fontStyle:'bold',textColor:[10,31,61]}},
+      columnStyles:{0:{cellWidth:240},1:{cellWidth:240,halign:'right',fontStyle:'bold',textColor:[10,31,61]}},
       margin:{left:40,right:40},
       tableWidth:'wrap',
-      columnStyles:{0:{cellWidth:240},1:{cellWidth:240,halign:'right',fontStyle:'bold'}},
     });
   }
 
