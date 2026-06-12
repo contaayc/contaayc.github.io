@@ -1112,7 +1112,7 @@ function renderTasasFormulas(){
 // ══════════════════════════════════════════════════════
 // ANUALIDADES
 // ══════════════════════════════════════════════════════
-let varAnual='A', tipoAnual='Vencida', usaVA=true, sistemAnual='Frances';
+let varAnual='A', tipoAnual='Vencida', usaVA=true, sistemAnual='Francés';
 const formulasAnual={
   // Vencidas
   VA_V:      'VA = A × [(1 − (1+i)⁻ⁿ) / i]',
@@ -1350,7 +1350,7 @@ function toggleTablaAnual(){
 
 function renderSistemas(A,esAmort,i,n,base){
   _tablaA=A; _tablaI=i; _tablaN=n; _tablaBase=base; _tablaEsAmort=esAmort;
-  sistemAnual='Frances';
+  sistemAnual='Francés';
   reducirPlazo=true;
   abonos={};
   renderAbonosList();
@@ -1408,7 +1408,8 @@ function renderTablaAmort(A,i,n,base,sistema){
   let cuotaActual=cuotaOriginal;
   let capitalFijoActual=capitalFijo;
 
-  for(let k=1;k<=n+500&&saldo>0.01;k++){
+  const maxIter = sistema==='Americano' ? n : n+500;
+  for(let k=1;k<=maxIter&&saldo>0.01;k++){
     const intPer=saldo*ip;
     let capital=0, cuotaReal=0, esGracia=false;
 
@@ -1443,8 +1444,10 @@ function renderTablaAmort(A,i,n,base,sistema){
       capital=Math.min(capitalFijoActual,saldo);
       cuotaReal=capital+intPer;
     } else {
-      capital=saldo<=cuotaActual?saldo:0;
-      cuotaReal=saldo<=cuotaActual?saldo+intPer:intPer;
+      // Americano: solo intereses hasta el último período, capital total al final
+      const esUltimo = (k === n) || (saldo - intPer <= 0.01);
+      capital = esUltimo ? saldo : 0;
+      cuotaReal = capital + intPer;
     }
 
     const saldoAntes=saldo;
@@ -1549,7 +1552,7 @@ function descargarPDF(){
     infoItems.push(['Modalidad abono', reducirPlazo?'Reducir Plazo':'Reducir Cuota']);
   }
   doc.autoTable({
-    startY: yInfo,
+    startY: 82,
     head:[['Parámetro','Valor']],
     body: infoItems,
     theme:'grid',
